@@ -13,3 +13,7 @@ allow system_server sys_thermal_wifi_limit:file { getattr open read watch watch_
 
 # Fastcharge
 allow system_server sysfs_fastcharge:file r_file_perms;
+
+# Sensors
+allow system_server vendor_hal_citsensorservice_xiaomi_default:binder { call transfer };
+allow system_server vendor_hal_sensorcommunicate_default:binder { call transfer };

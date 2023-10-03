@@ -1,5 +1,19 @@
+# Camera
 vendor_public_prop(vendor_camera_p3enable_prop)
 vendor_public_prop(vendor_camera_sensor_prop)
+
+# Displayfeature
+vendor_public_prop(vendor_displayfeature_prop)
+
+# Fingerprint
 vendor_public_prop(vendor_fp_prop)
+
+# NFC
 vendor_public_prop(vendor_nfc_mi_prop)
+
+# Sensors
+vendor_public_prop(vendor_cct_prop)
+vendor_public_prop(vendor_parsedalgo_prop)
+
+# Thermal
 vendor_public_prop(vendor_thermal_normal_prop)
