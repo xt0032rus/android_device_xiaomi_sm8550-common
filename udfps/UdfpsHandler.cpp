@@ -25,6 +25,8 @@
 #define LOW_BRIGHTNESS_THRESHHOLD 100
 
 #define COMMAND_FOD_PRESS_STATUS 1
+#define COMMAND_FOD_PRESS_X 2
+#define COMMAND_FOD_PRESS_Y 3
 #define PARAM_FOD_PRESSED 1
 #define PARAM_FOD_RELEASED 0
 
@@ -121,6 +123,8 @@ class XiaomiSM8550UdfpsHander : public UdfpsHandler {
                 }
 
                 bool pressed = readBool(fd);
+                mDevice->extCmd(mDevice, COMMAND_FOD_PRESS_X, pressed ? lastPressX : 0);
+                mDevice->extCmd(mDevice, COMMAND_FOD_PRESS_Y, pressed ? lastPressY : 0);
                 mDevice->extCmd(mDevice, COMMAND_FOD_PRESS_STATUS,
                                 pressed ? PARAM_FOD_PRESSED : PARAM_FOD_RELEASED);
 
@@ -203,8 +207,12 @@ class XiaomiSM8550UdfpsHander : public UdfpsHandler {
         }).detach();
     }
 
-    void onFingerDown(uint32_t /*x*/, uint32_t /*y*/, float /*minor*/, float /*major*/) {
-        LOG(INFO) << __func__;
+    void onFingerDown(uint32_t x, uint32_t y, float /*minor*/, float /*major*/) {
+        LOG(INFO) << __func__ << "x: " << x << ", y: " << y;
+        // Track x and y coordinates
+        lastPressX = x;
+        lastPressY = y;
+
         // Ensure touchscreen is aware of the press state, ideally this is not needed
         setFingerDown(true);
     }
@@ -261,6 +269,7 @@ class XiaomiSM8550UdfpsHander : public UdfpsHandler {
     fingerprint_device_t* mDevice;
     android::base::unique_fd touch_fd_;
     bool enrolling = false;
+    uint32_t lastPressX, lastPressY;
 
     void setFodStatus(int value) {
         int buf[MAX_BUF_SIZE] = {MI_DISP_PRIMARY, Touch_Fod_Enable, value};
