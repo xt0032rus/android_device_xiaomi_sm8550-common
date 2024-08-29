@@ -98,6 +98,7 @@ class XiaomiSM8550UdfpsHander : public UdfpsHandler {
     void init(fingerprint_device_t* device) {
         mDevice = device;
         touch_fd_ = android::base::unique_fd(open(TOUCH_DEV_PATH, O_RDWR));
+        disp_fd_ = android::base::unique_fd(open(DISP_FEATURE_PATH, O_RDWR));
 
         // Thread to notify fingeprint hwmodule about fod presses
         std::thread([this]() {
@@ -235,7 +236,7 @@ class XiaomiSM8550UdfpsHander : public UdfpsHandler {
   private:
     fingerprint_device_t* mDevice;
     android::base::unique_fd touch_fd_;
-    bool enrolling = false;
+    android::base::unique_fd disp_fd_;
     uint32_t lastPressX, lastPressY;
 
     void setFingerDown(bool pressed) {
