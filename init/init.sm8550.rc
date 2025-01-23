@@ -7,9 +7,11 @@ on boot
     chown system system /dev/goodix_fp
 
     chown system system /sys/devices/virtual/mi_display/disp_feature/disp-DSI-0/disp_param
+    chown system system /sys/devices/virtual/touch/touch_dev/bump_sample_rate
     chown system system /sys/class/touch/touch_dev/fod_press_status
 
     chmod 0664 /sys/devices/virtual/mi_display/disp_feature/disp-DSI-0/disp_param
+    chmod 0660 /sys/devices/virtual/touch/touch_dev/bump_sample_rate
     chmod 0664 /sys/class/touch/touch_dev/fod_press_status
 
 
