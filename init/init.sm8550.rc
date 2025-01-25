@@ -8,6 +8,7 @@ on boot
 
     chown system system /sys/devices/virtual/mi_display/disp_feature/disp-DSI-0/disp_param
     chown system system /sys/devices/virtual/touch/touch_dev/bump_sample_rate
+    chown system system /sys/class/qcom-battery/reverse_chg_mode
     chown system system /sys/class/touch/touch_dev/fod_longpress_gesture_enabled
     chown system system /sys/class/touch/touch_dev/fod_press_status
     chown system system /sys/class/touch/touch_dev/gesture_double_tap_enabled
@@ -17,6 +18,7 @@ on boot
 
     chmod 0664 /sys/devices/virtual/mi_display/disp_feature/disp-DSI-0/disp_param
     chmod 0660 /sys/devices/virtual/touch/touch_dev/bump_sample_rate
+    chmod 0644 /sys/class/qcom-battery/reverse_chg_mode
     chmod 0660 /sys/class/touch/touch_dev/fod_longpress_gesture_enabled
     chmod 0660 /sys/class/touch/touch_dev/fod_press_status
     chmod 0660 /sys/class/touch/touch_dev/gesture_double_tap_enabled
