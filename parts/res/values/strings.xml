@@ -54,11 +54,45 @@
     <string name="auto_hbm_disable_time_title">Disable time</string>
     <string name="auto_hbm_disable_time_summary">Duration in seconds for which HBM is deactivated if the light threshold falls below the set level</string>   
 
-     <!-- Thermal Profile -->
-    <string name="thermalprofile_title">Thermal Profile</string>
-    <string name="thermalprofile_default">Default</string>
-    <string name="thermalprofile_battery">Battery Saver</string>
-    <string name="thermalprofile_game">Game</string>
-    <string name="thermalprofile_performance">Performance</string>
-    <string name="thermalprofile_unknown">Unknown</string>
+    <!-- Thermal Profiles -->
+    <string name="thermal_title">Per-App Thermal Profile</string>
+    <string name="thermal_enable">Use Per-app thermal profiles</string>
+    <string name="thermal_summary">Adjust per-app thermal profiles for optimum performance</string>
+    <string name="thermal_default">Default</string>
+    <string name="thermal_benchmark">Benchmark</string>
+    <string name="thermal_browser">Browser</string>
+    <string name="thermal_camera">Camera</string>
+    <string name="thermal_dialer">Dialer</string>
+    <string name="thermal_gaming">Gaming</string>
+    <string name="thermal_navigation">Navigation</string>
+    <string name="thermal_streaming">Streaming</string>
+    <string name="thermal_video">Video</string>
+
+    <!-- Thermal Tile Strings -->
+    <string name="thermal_tile_label">Per-App Thermal Profile</string>
+    <string name="thermal_tile_enabled_subtitle">Enabled</string>
+    <string name="thermal_tile_disabled_subtitle">Disabled</string>
+
+        <!-- Power Profile Strings -->
+    <string name="powerprofile_tile_label">Power Profile</string>
+    <string name="powerprofile_mode_balance">Balanced</string>
+    <string name="powerprofile_mode_performance">Performance</string>
+    <string name="powerprofile_mode_battery_saver">Battery Saver</string>
+    <string name="powerprofile_mode_gaming">Gaming</string>
+    <string name="powerprofile_mode_unknown">Unknown Mode</string>
+    <string name="powerprofile_tile_disabled_subtitle">Disabled (Per-app thermal profiles enabled)</string>
+    <string name="perf_mode_title">High Performance Mode</string>
+    <string name="perf_mode_notification">High Performance Mode is now activated for enhanced performance.</string>
+    <string name="gaming_mode_title">Game Boost</string>
+    <string name="gaming_mode_notification">Game Boost Mode is now activated for optimal gaming performance.</string>
+    <string name="power_profile_footer_summary">Note: Higher frequencies (e.g., GPU over 900MHz and prime core higher clock) are available only in Game Boost mode.</string>
+
+    <!-- Powertools Main Title -->
+    <string name="Powertools_title">Powertools</string>
+    <string name="Powertools_summary">Customize power profiles, CPU/GPU frequencies, and governor settings for optimized performance and efficiency</string>
+
+    <!-- GPU Strings -->
+    <string name="gpu_min_frequency">GPU Minimum Frequency</string>
+    <string name="gpu_max_frequency">GPU Maximum Frequency</string>
+
 </resources>

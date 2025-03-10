@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -23,6 +23,8 @@ import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.res.Configuration;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.util.Log;
@@ -57,7 +59,7 @@ public class ThermalService extends Service {
         try {
             ActivityTaskManager.getService().registerTaskStackListener(mTaskListener);
         } catch (RemoteException e) {
-            
+            // Do nothing
         }
         mThermalUtils = ThermalUtils.getInstance(this);
         registerReceiver();
@@ -71,28 +73,13 @@ public class ThermalService extends Service {
         try {
             ActivityTaskManager.getService().unregisterTaskStackListener(mTaskListener);
         } catch (RemoteException e) {
-            
+            // Do nothing
         }
-        super.onDestroy();
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         dlog("Starting service");
-        
-        if (mThermalUtils.isEnabled()) {
-            try {
-                final ActivityTaskManager.RootTaskInfo focusedTask =
-                        ActivityTaskManager.getService().getFocusedRootTaskInfo();
-                if (focusedTask != null && focusedTask.topActivity != null) {
-                    ComponentName taskComponentName = focusedTask.topActivity;
-                    mCurrentApp = taskComponentName.getPackageName();
-                    setThermalProfile();
-                }
-            } catch (Exception e) {
-                dlog("Error getting focused task on start: " + e.getMessage());
-            }
-        }
         return START_STICKY;
     }
 
@@ -102,29 +89,17 @@ public class ThermalService extends Service {
     }
 
     private void registerReceiver() {
-        android.content.IntentFilter filter = new android.content.IntentFilter();
+        IntentFilter filter = new IntentFilter();
         filter.addAction(Intent.ACTION_SCREEN_OFF);
         filter.addAction(Intent.ACTION_SCREEN_ON);
         this.registerReceiver(mIntentReceiver, filter);
     }
 
     private void setThermalProfile() {
-        if (!mThermalUtils.isEnabled()) {
-            mThermalUtils.setDefaultThermalProfile();
-            return;
-        }
-
-        if (!mScreenOn) {
-            mThermalUtils.setDefaultThermalProfile();
-            return;
-        }
-
-        if (mThermalUtils.isPackageConfigured(mCurrentApp)) {
-            final int state = mThermalUtils.getStateForPackage(mCurrentApp);
-            com.xiaomi.settings.utils.FileUtils.writeLine(ThermalUtils.THERMAL_SCONFIG, ThermalUtils.THERMAL_STATE_MAP.get(state));
+        if (mScreenOn) {
+            mThermalUtils.setThermalProfile(mCurrentApp);
         } else {
-            int lastManualProfileState = mThermalUtils.getLastManualThermalProfile();
-            com.xiaomi.settings.utils.FileUtils.writeLine(ThermalUtils.THERMAL_SCONFIG, ThermalUtils.THERMAL_STATE_MAP.get(lastManualProfileState));
+            mThermalUtils.setDefaultThermalProfile();
         }
     }
 

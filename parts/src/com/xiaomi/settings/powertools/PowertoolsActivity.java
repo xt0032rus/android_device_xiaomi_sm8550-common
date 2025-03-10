@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 The LineageOS Project
+ * Copyright (C) 2025 kenway214
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,30 +14,25 @@
  * limitations under the License.
  */
 
-package com.xiaomi.settings.thermal;
+package com.xiaomi.settings.powertools;
 
 import android.os.Bundle;
-import android.view.MenuItem;
-
 import com.android.settingslib.collapsingtoolbar.CollapsingToolbarBaseActivity;
+import com.xiaomi.settings.R;
 
-public class ThermalSettingsActivity extends CollapsingToolbarBaseActivity {
-
-    private static final String TAG_THERMAL = "thermal";
-
+public class PowertoolsActivity extends CollapsingToolbarBaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getFragmentManager().beginTransaction().replace(com.android.settingslib.collapsingtoolbar.R.id.content_frame,
-                new ThermalSettingsFragment(), TAG_THERMAL).commit();
-    }
+        setContentView(R.layout.activity_powertools);
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == android.R.id.home) {
-            onBackPressed();
-            return true;
+        if (savedInstanceState == null) {
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.powertools_fragment_container,
+                             new PowertoolsSettingsFragment(),
+                             "powertools")
+                    .commit();
         }
-        return false;
     }
 }
+

@@ -17,8 +17,6 @@ package com.xiaomi.settings.thermal;
 
 import android.annotation.Nullable;
 import android.content.Context;
-import android.content.ComponentName;
-import android.service.quicksettings.TileService;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
@@ -78,8 +76,6 @@ public class ThermalSettingsFragment extends PreferenceFragment
         mMainSwitch.addOnSwitchChangeListener((switchView, isChecked) -> {
             mThermalUtils.setEnabled(isChecked);
             mAppsRecyclerView.setVisibility(isChecked ? View.VISIBLE : View.GONE);
-            TileService.requestListeningState(getActivity(),
-                    new ComponentName(getActivity(), ThermalTileService.class));
         });
         mMainSwitch.setChecked(mThermalUtils.isEnabled());
     }
@@ -172,7 +168,7 @@ public class ThermalSettingsFragment extends PreferenceFragment
             final String sectionIndex;
 
             if (!info.enabled) {
-                sectionIndex = "--";
+                sectionIndex = "--"; // XXX
             } else if (TextUtils.isEmpty(label)) {
                 sectionIndex = "";
             } else {
@@ -202,12 +198,22 @@ public class ThermalSettingsFragment extends PreferenceFragment
 
     private int getStateDrawable(int state) {
         switch (state) {
-            case ThermalUtils.STATE_BATTERY:
-                return R.drawable.ic_thermal_battery;
+            case ThermalUtils.STATE_BENCHMARK:
+                return R.drawable.ic_thermal_benchmark;
+            case ThermalUtils.STATE_BROWSER:
+                return R.drawable.ic_thermal_browser;
+            case ThermalUtils.STATE_CAMERA:
+                return R.drawable.ic_thermal_camera;
+            case ThermalUtils.STATE_DIALER:
+                return R.drawable.ic_thermal_dialer;
             case ThermalUtils.STATE_GAMING:
                 return R.drawable.ic_thermal_gaming;
-            case ThermalUtils.STATE_PERFORMANCE:
-                return R.drawable.ic_thermal_performance;
+            case ThermalUtils.STATE_NAVIGATION:
+                return R.drawable.ic_thermal_navigation;
+            case ThermalUtils.STATE_STREAMING:
+                return R.drawable.ic_thermal_streaming;
+            case ThermalUtils.STATE_VIDEO:
+                return R.drawable.ic_thermal_video;
             case ThermalUtils.STATE_DEFAULT:
             default:
                 return R.drawable.ic_thermal_default;
@@ -237,10 +243,15 @@ public class ThermalSettingsFragment extends PreferenceFragment
 
         private final LayoutInflater inflater;
         private final int[] items = {
-                R.string.thermalprofile_default,
-                R.string.thermalprofile_battery,
-                R.string.thermalprofile_game,
-                R.string.thermalprofile_performance
+                R.string.thermal_default,
+                R.string.thermal_benchmark,
+                R.string.thermal_browser,
+                R.string.thermal_camera,
+                R.string.thermal_dialer,
+                R.string.thermal_gaming,
+                R.string.thermal_navigation,
+                R.string.thermal_streaming,
+                R.string.thermal_video
         };
 
         private ModeAdapter(Context context) {
@@ -273,7 +284,7 @@ public class ThermalSettingsFragment extends PreferenceFragment
             }
 
             view.setText(items[position]);
-            view.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14f);
+            view.setTextSize(14f);
             return view;
         }
     }
@@ -347,7 +358,7 @@ public class ThermalSettingsFragment extends PreferenceFragment
             int currentState = mThermalUtils.getStateForPackage(entry.info.packageName);
             if (currentState != position) {
                 mThermalUtils.writePackage(entry.info.packageName, position);
-                rebuild();
+                notifyDataSetChanged();
             }
         }
 
@@ -372,6 +383,14 @@ public class ThermalSettingsFragment extends PreferenceFragment
 
             final int index = Arrays.binarySearch(mPositions, position);
 
+            /*
+             * Consider this example: section positions are 0, 3, 5; the supplied
+             * position is 4. The section corresponding to position 4 starts at
+             * position 3, so the expected return value is 1. Binary search will not
+             * find 4 in the array and thus will return -insertPosition-1, i.e. -3.
+             * To get from that number to the expected value of 1 we need to negate
+             * and subtract 2.
+             */
             return index >= 0 ? index : -index - 2;
         }
 
@@ -411,9 +430,13 @@ public class ThermalSettingsFragment extends PreferenceFragment
 
         @Override
         public boolean filterApp(ApplicationsState.AppEntry entry) {
-            synchronized (mLauncherResolveInfoList) {
-                return mLauncherResolveInfoList.contains(entry.info.packageName);
+            boolean show = !mAllPackagesAdapter.mEntries.contains(entry.info.packageName);
+            if (show) {
+                synchronized (mLauncherResolveInfoList) {
+                    show = mLauncherResolveInfoList.contains(entry.info.packageName);
+                }
             }
+            return show;
         }
     }
 }

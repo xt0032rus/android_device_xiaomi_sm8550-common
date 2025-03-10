@@ -35,6 +35,9 @@ import com.xiaomi.settings.autohbm.HbmTileService;
 import com.xiaomi.settings.thermal.ThermalSettingsActivity;
 import com.xiaomi.settings.thermal.ThermalTileService;
 
+import com.xiaomi.settings.powertools.PowerProfileTileService;
+import com.xiaomi.settings.powertools.PowertoolsActivity;
+
 public final class TileHandlerActivity extends Activity {
     private static final String TAG = "TileHandlerActivity";
 
@@ -45,6 +48,7 @@ public final class TileHandlerActivity extends Activity {
         TILE_ACTIVITY_MAP.put(AutoHbmTileService.class.getName(), AutoHbmActivity.class);
         TILE_ACTIVITY_MAP.put(HbmTileService.class.getName(), AutoHbmActivity.class);
         TILE_ACTIVITY_MAP.put(ThermalTileService.class.getName(), ThermalSettingsActivity.class);
+        TILE_ACTIVITY_MAP.put(PowerProfileTileService.class.getName(), PowertoolsActivity.class);
     }
 
     @Override

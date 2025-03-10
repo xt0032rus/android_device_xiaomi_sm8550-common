@@ -1,7 +1,18 @@
 /*
- * Copyright (C) 2022-2024 Paranoid Android
+ * Copyright (C) 2016 The CyanogenMod Project
+ *               2025 The LineageOS Project
  *
- * SPDX-License-Identifier: Apache-2.0
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package com.xiaomi.settings.utils;
@@ -17,13 +28,22 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 public final class FileUtils {
+    private static final String TAG = "FileUtils";
 
-    private static final String TAG = "XiaomiPartsFileUtils";
-    private static final boolean DEBUG = true;
+    private FileUtils() {
+        // This class is not supposed to be instantiated
+    }
 
-    public static String readLine(String fileName) {
+    /**
+     * Reads the first line of text from the given file.
+     * Reference {@link BufferedReader#readLine()} for clarification on what a line is
+     *
+     * @return the read line contents, or null on failure
+     */
+    public static String readOneLine(String fileName) {
         String line = null;
         BufferedReader reader = null;
+
         try {
             reader = new BufferedReader(new FileReader(fileName), 512);
             line = reader.readLine();
@@ -36,60 +56,80 @@ public final class FileUtils {
                 if (reader != null) {
                     reader.close();
                 }
-            } catch (IOException e) { }
+            } catch (IOException e) {
+                // Ignored, not much we can do anyway
+            }
         }
+
         return line;
     }
 
-    public static int readLineInt(String fileName) {
-        try {
-            return Integer.parseInt(readLine(fileName).replace("0x", ""));
-        }
-        catch (NumberFormatException e) {
-            Log.e(TAG, "Could not convert string to int from file " + fileName, e);
-        }
-        return 0;
-    }
+    /**
+     * Writes the given value into the given file
+     *
+     * @return true on success, false on failure
+     */
+    public static boolean writeLine(String fileName, String value) {
+        BufferedWriter writer = null;
 
-    public static void writeLine(String fileName, String value) {
-        BufferedWriter writerValue = null;
         try {
-            writerValue = new BufferedWriter(new FileWriter(fileName));
-            writerValue.write(value);
+            writer = new BufferedWriter(new FileWriter(fileName));
+            writer.write(value);
+            writer.flush();
         } catch (FileNotFoundException e) {
             Log.w(TAG, "No such file " + fileName + " for writing", e);
+            return false;
         } catch (IOException e) {
             Log.e(TAG, "Could not write to file " + fileName, e);
+            return false;
         } finally {
             try {
-                if (writerValue != null) {
-                    writerValue.close();
+                if (writer != null) {
+                    writer.close();
                 }
             } catch (IOException e) {
-                // Ignored
+                // Ignored, not much we can do anyway
             }
         }
+
+        return true;
     }
 
-    public static void writeLine(String fileName, int value) {
-        writeLine(fileName, Integer.toString(value));
-    }
-
+    /**
+     * Checks whether the given file exists
+     *
+     * @return true if exists, false if not
+     */
     public static boolean fileExists(String fileName) {
         final File file = new File(fileName);
         return file.exists();
     }
 
+    /**
+     * Checks whether the given file is readable
+     *
+     * @return true if readable, false if not
+     */
     public static boolean isFileReadable(String fileName) {
         final File file = new File(fileName);
         return file.exists() && file.canRead();
     }
 
+    /**
+     * Checks whether the given file is writable
+     *
+     * @return true if writable, false if not
+     */
     public static boolean isFileWritable(String fileName) {
         final File file = new File(fileName);
         return file.exists() && file.canWrite();
     }
 
+    /**
+     * Deletes an existing file
+     *
+     * @return true if the delete was successful, false if not
+     */
     public static boolean delete(String fileName) {
         final File file = new File(fileName);
         boolean ok = false;
@@ -101,6 +141,11 @@ public final class FileUtils {
         return ok;
     }
 
+    /**
+     * Renames an existing file
+     *
+     * @return true if the rename was successful, false if not
+     */
     public static boolean rename(String srcPath, String dstPath) {
         final File srcFile = new File(srcPath);
         final File dstFile = new File(dstPath);
@@ -115,6 +160,40 @@ public final class FileUtils {
         return ok;
     }
 
+    /**
+     * Writes the given value into the given file.
+     * @return true on success, false on failure
+     */
+    public static boolean writeValue(String fileName, String value) {
+        BufferedWriter writer = null;
+
+        try {
+            writer = new BufferedWriter(new FileWriter(fileName));
+            writer.write(value);
+            writer.flush();
+        } catch (FileNotFoundException e) {
+            Log.w(TAG, "No such file " + fileName + " for writing", e);
+            return false;
+        } catch (IOException e) {
+            Log.e(TAG, "Could not write to file " + fileName, e);
+            return false;
+        } finally {
+            try {
+                if (writer != null) {
+                    writer.close();
+                }
+            } catch (IOException e) {
+                // Ignored, not much we can do anyway
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * Reads the value from the given file.
+     * @return the value read from the file, or the default value if an error occurs
+     */
     public static String getFileValue(String fileName, String defaultValue) {
         String value = defaultValue;
         BufferedReader reader = null;
@@ -132,9 +211,12 @@ public final class FileUtils {
                     reader.close();
                 }
             } catch (IOException e) {
-                // Ignored
+                // Ignored, not much we can do anyway
             }
         }
+
         return value;
     }
 }
+
+
