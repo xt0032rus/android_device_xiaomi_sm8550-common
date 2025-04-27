@@ -205,6 +205,9 @@ DEVICE_MANIFEST_FILE := \
 # Vendor security patch
 VENDOR_SECURITY_PATCH := 2025-10-01
 
+# Bluetooth
+BOARD_BLUETOOTH_BDROID_BUILDCFG_INCLUDE_DIR := $(COMMON_PATH)/configs/bluetooth/include
+
 # Verified Boot
 BOARD_AVB_ENABLE := true
 BOARD_AVB_MAKE_VBMETA_IMAGE_ARGS += --flags 3
