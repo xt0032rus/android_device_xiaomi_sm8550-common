@@ -28,6 +28,8 @@ on post-fs-data
     mkdir /mnt/vendor/persist/fpc 0770 system system
 
 on property:vendor.post_boot.parsed=1
+    # Set default thermal profile
+    write /sys/class/thermal/thermal_message/sconfig 0
 
     # Kill WALT CPU input boost
     write /proc/sys/walt/input_boost/input_boost_freq "0 0 0 0 0 0 0"
