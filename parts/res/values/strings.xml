@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+     Copyright (C) 2023 Paranoid Android
+
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+
+          http://www.apache.org/licenses/LICENSE-2.0
+
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.
+-->
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <!-- Xiaomi Settings -->
+    <string name="app_title">Xiaomi Settings</string>
+    <string name="tile_add">Add tile</string>
+    <string name="tile_added">Tile added</string>
+    <string name="tile_not_added">Tile not added</string>
+    <string name="tile_already_added">Tile already added</string>
+    <string name="tile_on">On</string>
+    <string name="tile_off">Off</string>
+
+    <!-- Clear Speaker -->
+   <string name="clear_speaker_title">Clear speaker</string>
+   <string name="clear_speaker_summary">Play a 30-second audio to clear the speaker</string>
+   <string name="clear_speaker_description">Run this feature once or twice if you find that your speaker is lightly blocked by dust. Set media volume to maximum.\n\nIf the speaker is blocked heavily, run this feature 2-5 times while shaking your device with the speaker facing downwards.</string>
+
+    <!-- Custom seekbar -->
+    <string name="custom_seekbar_value">Value: <xliff:g id="v">%s</xliff:g></string>
+    <string name="custom_seekbar_default_value">by default</string>
+    <string name="custom_seekbar_default_value_to_set">Default value: <xliff:g id="v">%s</xliff:g>\nLong tap to set</string>
+    <string name="custom_seekbar_default_value_is_set">Default value is set</string>
+
+    <!-- Auto hbm -->
+    <string name="auto_hbm_title">Automatic High Brightness Mode (HBM)</string>
+    <string name="auto_hbm_main_switch_title">Use automatic HBM</string>
+    <string name="tile_auto_hbm">Auto HBM</string>
+    <string name="tile_hbm_on">Enabled</string>
+    <string name="tile_hbm_off">Disabled</string>
+    <string name="tile_hbm">HBM</string>
+    <string name="tile_hbm_unavailable">HBM Unavailable</string>
+    <string name="tile_auto_hbm_or_brightness_enabled">Auto HBM or Auto Brightness is enabled</string>
+    <string name="hbm_mode_title">High Brightness Mode</string>
+    <string name="hbm_mode_notification">High Brightness Mode is now activated. Long time usage may damage your display.</string>
+    <string name="auto_hbm_summary">Automatically enable high brightness mode based on sunlight intensity (lux)</string>
+    <string name="auto_hbm_threshold_title">Light threshold</string>
+    <string name="auto_hbm_threshold_summary">Define the light intensity threshold in lux units at which HBM is activated</string>
+    <string name="auto_hbm_enable_time_title">Enable time</string>
+    <string name="auto_hbm_enable_time_summary">Duration in seconds that the light threshold must be continuously met to activate HBM</string>
+    <string name="auto_hbm_disable_time_title">Disable time</string>
+    <string name="auto_hbm_disable_time_summary">Duration in seconds for which HBM is deactivated if the light threshold falls below the set level</string>   
+
+     <!-- Thermal Profile -->
+    <string name="thermalprofile_title">Thermal profile</string>
+    <string name="thermalprofile_default">Default</string>
+    <string name="thermalprofile_game">Game</string>
+    <string name="thermalprofile_unknown">Unknown</string>
+</resources>
