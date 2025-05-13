@@ -243,6 +243,7 @@ PRODUCT_COPY_FILES += \
 PRODUCT_PACKAGES += \
     CarrierConfigOverlayCommon \
     FrameworkResOverlayCommon \
+    DeviceAsWebcamResCommon \
     SystemUIOverlayCommon \
     SettingsOverlayCommon \
     TelephonyOverlayCommon \
