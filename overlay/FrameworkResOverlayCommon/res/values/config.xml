@@ -272,6 +272,12 @@
     -->
     <bool name="config_enableWifiDisplay">true</bool>
 
+    <!-- Battery health -->
+    <bool name="config_supportBatteryHealth">true</bool>
+    <string name="config_batteryCalculatedCapacity">/sys/class/power_supply/battery/charge_full</string>
+    <string name="config_batteryDesignCapacity">/sys/class/power_supply/battery/charge_full_design</string>
+    <string name="config_batteryChargeCycles">/sys/class/power_supply/battery/cycle_count</string>
+
     <!-- Default component for QR code scanner -->
     <string name="config_defaultQrCodeComponent" translatable="false">com.android.camera/com.android.camera.Camera</string>
 
