@@ -325,6 +325,7 @@ persist.vendor.radio.custom_ecc=1
 persist.vendor.radio.procedure_bytes=SKIP
 persist.radio.multisim.config=dsds
 ro.vendor.radio.build_region=global
+persist.vendor.data.iwlan.enable=true
 ro.com.android.dataroaming=true
 persist.vendor.radio.enableadvancedscan=true
 

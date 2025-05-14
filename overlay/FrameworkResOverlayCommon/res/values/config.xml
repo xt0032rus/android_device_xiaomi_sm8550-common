@@ -272,6 +272,11 @@
     -->
     <bool name="config_enableWifiDisplay">true</bool>
 
+    <!-- Package names to use with vendor iwlan implementation. -->
+    <string name="config_wlan_data_service_package" translatable="false">vendor.qti.iwlan</string>
+    <string name="config_wlan_network_service_package" translatable="false">vendor.qti.iwlan</string>
+    <string name="config_qualified_networks_service_package" translatable="false">vendor.qti.iwlan</string>
+
     <!-- Battery health -->
     <bool name="config_supportBatteryHealth">true</bool>
     <string name="config_batteryCalculatedCapacity">/sys/class/power_supply/battery/charge_full</string>
