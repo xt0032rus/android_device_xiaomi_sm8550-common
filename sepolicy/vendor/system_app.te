@@ -28,3 +28,7 @@ allow system_app vendor_sysfs_usb_supply:dir r_dir_perms;
 # Mlipay
 allow system_app hal_mlipay_hwservice:hwservice_manager find;
 binder_call(system_app, hal_mlipay_default)
+
+# Turbo Charging
+allow system_app vendor_sysfs_power_supply:file { read write open setattr getattr };
+allow system_app vendor_sysfs_power_supply:dir search;

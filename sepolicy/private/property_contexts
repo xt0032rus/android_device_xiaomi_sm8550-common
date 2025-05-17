@@ -21,3 +21,6 @@ ro.mi.os.version.incremental            u:object_r:exported_system_prop:s0
 ro.product.marketname                   u:object_r:build_prop:s0
 ro.fota.oem                             u:object_r:build_prop:s0
 ro.product.mod_device                   u:object_r:build_prop:s0
+
+# XiaomiParts
+persist.sys.turbo_charge_current    u:object_r:exported_system_prop:s0
