@@ -4,6 +4,29 @@
      SPDX-License-Identifier: Apache-2.0
 -->
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <!-- Determine whether we should show the "listen for instructions" screen after
+         successfully placing the OTA call -->
+    <integer name="OtaShowListeningScreen">1</integer>
+
+    <!-- Flag indicating if the phone is a world phone -->
+    <bool name="world_phone">false</bool>
+
+    <!-- Flag indicating if dtmf tone type is enabled -->
+    <bool name="dtmf_type_enabled">true</bool>
+    <!-- Determine whether calls to mute the microphone in PhoneUtils
+         are routed through the android.media.AudioManager class (true) or through
+         the com.android.internal.telephony.Phone interface (false). -->
+    <bool name="send_mic_mute_to_AudioManager">true</bool>
+
+    <!-- If this is true, the SIM card (through Customer Service Profile EF file) will be
+         able to prevent manual operator selection. If false, this SIM setting will be
+         ignored and manual operator selection will always be available. See
+         CPHS4_2.WW6, CPHS B.4.7.1 for more information -->
+    <bool name="csp_enabled">true</bool>
+
+    <!-- Show Preferred Network Type options in No SIM case -->
+    <bool name="config_no_sim_display_network_modes">true</bool>
+
     <!-- String indicating the package name of the device ImsService implementation for MMTEL. -->
     <string name="config_ims_mmtel_package">org.codeaurora.ims</string>
 
@@ -12,4 +35,11 @@
 
     <!-- String indicating the package name of the device GbaService implementation. -->
     <string name="config_gba_package">com.qualcomm.qti.uimGbaApp</string>
+
+    <!-- Show RTT option in Accessibility menu -->
+    <bool name="config_support_rtt">true</bool>
+
+    <!-- Whether the device supports dialing emergency RTT calls when there's no SIM
+         card installed -->
+    <bool name="config_support_simless_emergency_rtt">true</bool>
 </resources>
