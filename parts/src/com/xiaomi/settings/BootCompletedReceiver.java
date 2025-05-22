@@ -16,6 +16,9 @@ import android.util.Log;
 import android.view.Display;
 import android.view.Display.HdrCapabilities;
 
+import com.xiaomi.settings.thermal.ThermalService;
+import com.xiaomi.settings.thermal.ThermalUtils;
+
 public class BootCompletedReceiver extends BroadcastReceiver {
     private static final String TAG = "XiaomiParts";
     private static final boolean DEBUG = true;
@@ -27,6 +30,18 @@ public class BootCompletedReceiver extends BroadcastReceiver {
         }
         if (DEBUG)
             Log.d(TAG, "Received boot completed intent");
+
+        // Start ThermalService
+        try {
+            ThermalUtils thermalUtils = ThermalUtils.getInstance(context);
+            if (thermalUtils.isEnabled()) {
+                Intent thermalServiceIntent = new Intent(context, ThermalService.class);
+                context.startService(thermalServiceIntent);
+                if (DEBUG) Log.d(TAG, "Started ThermalService");
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to start ThermalService", e);
+        }
 
         // Override HDR types to enable Dolby Vision
         final DisplayManager displayManager = context.getSystemService(DisplayManager.class);

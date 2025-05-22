@@ -55,9 +55,9 @@
     <string name="auto_hbm_disable_time_summary">Duration in seconds for which HBM is deactivated if the light threshold falls below the set level</string>   
 
      <!-- Thermal Profile -->
-    <string name="thermalprofile_title">Thermal profile</string>
+    <string name="thermalprofile_title">Thermal Profile</string>
     <string name="thermalprofile_default">Default</string>
+    <string name="thermalprofile_battery">Battery Saver</string>
     <string name="thermalprofile_game">Game</string>
-    <string name="thermalprofile_battery">Battery</string>
     <string name="thermalprofile_unknown">Unknown</string>
 </resources>

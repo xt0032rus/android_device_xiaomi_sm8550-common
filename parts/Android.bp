@@ -6,6 +6,9 @@
 
 android_app {
     name: "XiaomiParts",
+    defaults: [
+        "SettingsLibDefaults",
+    ],
     certificate: "platform",
     srcs: [
         "src/**/*.kt",
