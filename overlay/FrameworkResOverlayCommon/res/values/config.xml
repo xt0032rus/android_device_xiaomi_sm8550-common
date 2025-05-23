@@ -273,6 +273,12 @@
          meanings. -->
     <integer name="config_defaultNotificationVibrationIntensity">3</integer>
 
+    <!-- Whether device has turbo power charging support -->
+    <bool name="config_hasTurboPowerCharger">true</bool>
+
+    <!-- Path to fast charging status file to detect whether an oem fast charger is active -->
+    <string name="config_oemFastChargerStatusPath" translatable="false">/sys/class/qcom-battery/fastchg_mode</string>
+    
     <!-- The default intensity level for notification vibrations. See
          Settings.System.RING_VIBRATION_INTENSITY more details on the constant values and
          meanings. -->
