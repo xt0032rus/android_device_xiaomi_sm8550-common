@@ -42,16 +42,19 @@ public final class ThermalUtils {
     protected static final int STATE_DEFAULT = 0;
     protected static final int STATE_BATTERY = 1;
     protected static final int STATE_GAMING = 2;
+    protected static final int STATE_PERFORMANCE = 3;
 
     protected static final Map<Integer, String> THERMAL_STATE_MAP = Map.of(
         STATE_DEFAULT, "0",
         STATE_BATTERY, "1",
-        STATE_GAMING, "19"
+        STATE_GAMING, "19",
+        STATE_PERFORMANCE, "6"
     );
 
     private static final String THERMAL_BATTERY = "thermal.battery=";
     private static final String THERMAL_GAMING = "thermal.gaming=";
     private static final String THERMAL_DEFAULT = "thermal.default=";
+    private static final String THERMAL_PERFORMANCE = "thermal.performance=";
 
     protected static final String THERMAL_SCONFIG = "/sys/class/thermal/thermal_message/sconfig";
 
@@ -110,8 +113,9 @@ public final class ThermalUtils {
     private String getValue() {
         String value = mSharedPrefs.getString(THERMAL_CONTROL, null);
 
-        if (value == null || value.isEmpty()) {
-            value = THERMAL_BATTERY + ":" + THERMAL_GAMING + ":" + THERMAL_DEFAULT;
+        if (value == null || value.isEmpty() || value.split(":").length != 4) {
+            Log.e(TAG, "Thermal control preferences are corrupted or empty. Resetting to default.");
+            value = THERMAL_BATTERY + ":" + THERMAL_GAMING + ":" + THERMAL_DEFAULT + ":" + THERMAL_PERFORMANCE;
             writeValue(value);
         }
         return value;
@@ -134,9 +138,12 @@ public final class ThermalUtils {
             case STATE_DEFAULT:
                 modes[2] = modes[2] + packageName + ",";
                 break;
+            case STATE_PERFORMANCE:
+                modes[3] = modes[3] + packageName + ",";
+                break;
         }
 
-        finalString = modes[0] + ":" + modes[1] + ":" + modes[2];
+        finalString = modes[0] + ":" + modes[1] + ":" + modes[2] + ":" + modes[3];
 
         writeValue(finalString);
     }
@@ -152,6 +159,8 @@ public final class ThermalUtils {
             state = STATE_GAMING;
         } else if (modes[2].contains(packageName + ",")) {
             state = STATE_DEFAULT;
+        } else if (modes[3].contains(packageName + ",")) {
+            state = STATE_PERFORMANCE;
         } else {
             state = getDefaultStateForPackage(packageName);
         }
@@ -205,7 +214,8 @@ public final class ThermalUtils {
         String[] modes = value.split(":");
         return (modes[0].contains(packageName + ",") ||
                 modes[1].contains(packageName + ",") ||
-                modes[2].contains(packageName + ","));
+                modes[2].contains(packageName + ",") ||
+                modes[3].contains(packageName + ","));
     }
 
     public String getCurrentAppPackageName() {

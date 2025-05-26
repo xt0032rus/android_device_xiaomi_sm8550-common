@@ -59,5 +59,6 @@
     <string name="thermalprofile_default">Default</string>
     <string name="thermalprofile_battery">Battery Saver</string>
     <string name="thermalprofile_game">Game</string>
+    <string name="thermalprofile_performance">Performance</string>
     <string name="thermalprofile_unknown">Unknown</string>
 </resources>

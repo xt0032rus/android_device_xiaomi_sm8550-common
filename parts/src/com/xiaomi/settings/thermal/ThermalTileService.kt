@@ -22,6 +22,7 @@ class ThermalTileService : TileService() {
         private const val THERMAL_PROFILE_DEFAULT = 0
         private const val THERMAL_PROFILE_MBATTERY = 1
         private const val THERMAL_PROFILE_MGAME = 19
+        private const val THERMAL_PROFILE_PERFORMANCE = 6
     }
 
     private fun updateTileUI(profile: Int) {
@@ -31,6 +32,7 @@ class ThermalTileService : TileService() {
             THERMAL_PROFILE_DEFAULT -> getString(R.string.thermalprofile_default)
             THERMAL_PROFILE_MBATTERY -> getString(R.string.thermalprofile_battery)
             THERMAL_PROFILE_MGAME -> getString(R.string.thermalprofile_game)
+            THERMAL_PROFILE_PERFORMANCE -> getString(R.string.thermalprofile_performance)
             else -> getString(R.string.thermalprofile_unknown)
         }
         tile.state = Tile.STATE_ACTIVE
@@ -75,7 +77,8 @@ class ThermalTileService : TileService() {
         val newThermalProfile = when (currentThermalProfile) {
             THERMAL_PROFILE_DEFAULT -> THERMAL_PROFILE_MBATTERY
             THERMAL_PROFILE_MBATTERY -> THERMAL_PROFILE_MGAME
-            THERMAL_PROFILE_MGAME -> THERMAL_PROFILE_DEFAULT
+            THERMAL_PROFILE_MGAME -> THERMAL_PROFILE_PERFORMANCE
+            THERMAL_PROFILE_PERFORMANCE -> THERMAL_PROFILE_DEFAULT
             else -> THERMAL_PROFILE_DEFAULT
         }
         FileUtils.writeLine(THERMAL_PROFILE_PATH, newThermalProfile)
@@ -85,6 +88,7 @@ class ThermalTileService : TileService() {
             when (newThermalProfile) {
                 THERMAL_PROFILE_MBATTERY -> ThermalUtils.STATE_BATTERY
                 THERMAL_PROFILE_MGAME -> ThermalUtils.STATE_GAMING
+                THERMAL_PROFILE_PERFORMANCE -> ThermalUtils.STATE_PERFORMANCE
                 else -> ThermalUtils.STATE_DEFAULT
             }
         )

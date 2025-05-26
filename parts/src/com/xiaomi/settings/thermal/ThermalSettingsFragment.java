@@ -206,6 +206,8 @@ public class ThermalSettingsFragment extends PreferenceFragment
                 return R.drawable.ic_thermal_battery;
             case ThermalUtils.STATE_GAMING:
                 return R.drawable.ic_thermal_gaming;
+            case ThermalUtils.STATE_PERFORMANCE:
+                return R.drawable.ic_thermal_performance;
             case ThermalUtils.STATE_DEFAULT:
             default:
                 return R.drawable.ic_thermal_default;
@@ -237,7 +239,8 @@ public class ThermalSettingsFragment extends PreferenceFragment
         private final int[] items = {
                 R.string.thermalprofile_default,
                 R.string.thermalprofile_battery,
-                R.string.thermalprofile_game 
+                R.string.thermalprofile_game,
+                R.string.thermalprofile_performance
         };
 
         private ModeAdapter(Context context) {
