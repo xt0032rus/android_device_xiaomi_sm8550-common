@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -106,18 +106,11 @@ public final class ThermalUtils {
         return sInstance;
     }
 
-    /**
-     * Returns the current enabled state always reading from shared preferences.
-     */
     public boolean isEnabled() {
         return mSharedPrefs.getBoolean(THERMAL_ENABLED, false);
     }
 
-    /**
-     * Sets the thermal master switch enabled/disabled. It starts or stops the service as needed.
-     */
     public void setEnabled(boolean enabled) {
-        // Write the value into SharedPreferences
         mSharedPrefs.edit().putBoolean(THERMAL_ENABLED, enabled).apply();
         dlog("setEnabled: " + enabled);
         if (enabled) {
@@ -146,10 +139,11 @@ public final class ThermalUtils {
 
     private String getValue() {
         String value = mSharedPrefs.getString(THERMAL_CONTROL, null);
-        if (value == null || value.isEmpty()) {
-            value = THERMAL_BENCHMARK + ":" + THERMAL_BROWSER + ":" + THERMAL_CAMERA + ":" +
-                    THERMAL_DIALER + ":" + THERMAL_GAMING + ":" + THERMAL_NAVIGATION + ":" +
-                    THERMAL_STREAMING + ":" + THERMAL_VIDEO + ":" + THERMAL_DEFAULT;
+        String defaultValue = THERMAL_BENCHMARK + ":" + THERMAL_BROWSER + ":" + THERMAL_CAMERA + ":" +
+                THERMAL_DIALER + ":" + THERMAL_GAMING + ":" + THERMAL_NAVIGATION + ":" +
+                THERMAL_STREAMING + ":" + THERMAL_VIDEO + ":" + THERMAL_DEFAULT;
+        if (value == null || value.isEmpty() || value.split(":").length < 9) {
+            value = defaultValue;
             writeValue(value);
         }
         return value;
@@ -220,7 +214,6 @@ public final class ThermalUtils {
         } else if (modes[8].contains(packageName + ",")) {
             state = STATE_DEFAULT;
         } else {
-            // derive a default state based on package name
             state = getDefaultStateForPackage(packageName);
         }
 
