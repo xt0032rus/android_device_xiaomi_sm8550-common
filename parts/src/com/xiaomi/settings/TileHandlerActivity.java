@@ -38,6 +38,10 @@ import com.xiaomi.settings.thermal.ThermalTileService;
 import com.xiaomi.settings.powertools.PowerProfileTileService;
 import com.xiaomi.settings.powertools.PowertoolsActivity;
 
+import com.xiaomi.settings.hypercharge.HyperChargeTileService;
+import com.xiaomi.settings.hypercharge.HyperChargeSettingsActivity;
+
+
 public final class TileHandlerActivity extends Activity {
     private static final String TAG = "TileHandlerActivity";
 
@@ -49,6 +53,7 @@ public final class TileHandlerActivity extends Activity {
         TILE_ACTIVITY_MAP.put(HbmTileService.class.getName(), AutoHbmActivity.class);
         TILE_ACTIVITY_MAP.put(ThermalTileService.class.getName(), ThermalSettingsActivity.class);
         TILE_ACTIVITY_MAP.put(PowerProfileTileService.class.getName(), PowertoolsActivity.class);
+        TILE_ACTIVITY_MAP.put(HyperChargeTileService.class.getName(), HyperChargeSettingsActivity.class);
     }
 
     @Override

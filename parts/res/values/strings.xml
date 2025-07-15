@@ -95,4 +95,12 @@
     <string name="gpu_min_frequency">GPU Minimum Frequency</string>
     <string name="gpu_max_frequency">GPU Maximum Frequency</string>
 
+    <!-- HyperCharge Strings -->
+    <string name="hypercharge_title">120W HyperCharge</string>
+    <string name="hypercharge_on">HyperCharge On</string>
+    <string name="hypercharge_off">HyperCharge Off (Limited)</string>
+    <string name="hypercharge_main_switch_title">Enable 120W HyperCharge</string>
+    <string name="hypercharge_description_title">About this feature</string>
+    <string name="hypercharge_description_summary">"When enabled, your device will charge at its maximum 120W speed. When disabled, the charging speed will be limited to a standard rate to reduce heat and potentially prolong long-term battery health. By default, HyperCharge is ON."</string>
+
 </resources>

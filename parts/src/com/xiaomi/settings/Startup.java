@@ -72,4 +72,16 @@ public class Startup extends BroadcastReceiver {
         );
         Log.d(TAG, "Auto HBM settings applied");
     }
+
+    private void applyHyperChargeSetting(Context context) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        boolean isEnabled = prefs.getBoolean(Constants.KEY_HYPERCHARGE_STATUS, false);
+        Log.d(TAG, "Applying HyperCharge setting. Is feature ON? " + isEnabled);
+
+        if (!isEnabled) {
+            Log.d(TAG, "HyperCharge is set to OFF, starting limit service on boot.");
+            Intent serviceIntent = new Intent(context, com.xiaomi.settings.hypercharge.HyperChargeService.class);
+            context.startService(serviceIntent);
+        }
+    }
 }

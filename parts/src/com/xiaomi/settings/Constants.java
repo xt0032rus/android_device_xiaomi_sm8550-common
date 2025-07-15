@@ -25,4 +25,8 @@ public class Constants {
     public static final String KEY_AUTO_HBM_DISABLE_TIME = "auto_hbm_disable_time";
     public static final String KEY_CURRENT_LUX_LEVEL = "current_lux_level";
     public static final String NODE_BRIGHTNESS = "/sys/class/backlight/panel0-backlight/brightness";
+
+    // HyperCharge
+    public static final String KEY_HYPERCHARGE_STATUS = "hypercharge_status";
+    public static final String NODE_CONSTANT_CHARGE_CURRENT = "/sys/class/power_supply/battery/constant_charge_current";
 }
