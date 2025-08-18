@@ -47,6 +47,7 @@ public class PowerProfileUtil {
     public static final String PROP_THERMAL_CONTROLLED_BY = "sys.thermal.controlled_by";
     private static final String CONTROLLED_BY_POWERTOOLS = "powertools";
     private static final String CONTROLLED_BY_PERAPP = "perapp";
+    private static final String PREF_LAST_MODE = "power_profile_last_mode";
     private static final int NOTIFICATION_ID_PERFORMANCE = 1001;
     private static final int NOTIFICATION_ID_GAMING = 1002;
 
@@ -120,6 +121,9 @@ public class PowerProfileUtil {
         // Explicitly set that Powertools is in control
         SystemProperties.set(PROP_THERMAL_CONTROLLED_BY, CONTROLLED_BY_POWERTOOLS);
 
+        // Remember this mode as the user's last explicit choice
+        mSharedPrefs.edit().putInt(PREF_LAST_MODE, mode).apply();
+
         mCurrentMode = mode;
         int thermalValue;
         switch (mode) {
@@ -177,8 +181,9 @@ public class PowerProfileUtil {
      */
     public void restoreState() {
         Log.d(TAG, "Restoring Power Profile state.");
-        // We get the last managed mode and re-apply it.
-        setMode(getManagedMode());
+        // Read the last user-selected mode from preferences and re-apply it.
+        int lastKnownMode = mSharedPrefs.getInt(PREF_LAST_MODE, MODE_BALANCE);
+        setMode(lastKnownMode);
     }
 
     /**
