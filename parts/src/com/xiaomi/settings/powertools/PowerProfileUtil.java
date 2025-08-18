@@ -26,12 +26,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
-import android.database.ContentObserver;
-import android.os.Handler;
-import android.os.PowerManager;
 import android.os.Process;
 import android.os.SystemProperties;
-import android.provider.Settings;
 import android.util.Log;
 
 import androidx.preference.PreferenceManager;
@@ -70,7 +66,6 @@ public class PowerProfileUtil {
     private SharedPreferences mSharedPrefs;
     private NotificationManager mNotificationManager;
     private List<String> mGamePackages;
-    private ContentObserver mBatterySaverObserver;
     private int mCurrentMode = MODE_BALANCE;
     private String[] mModes;
 
@@ -93,7 +88,6 @@ public class PowerProfileUtil {
         }
 
         setupNotificationChannel();
-        registerBatterySaverObserver();
     }
 
     public int getCurrentMode() {
@@ -155,22 +149,16 @@ public class PowerProfileUtil {
         boolean success = FileUtils.writeLine(THERMAL_SCONFIG, String.valueOf(thermalValue));
         Log.d(TAG, "Thermal mode changed to " + mModes[mode] + ": " + success);
 
-        if (mode == MODE_BATTERY_SAVER) {
-            enableBatterySaver(true);
+        // Manage notifications based on the mode
+        if (mode == MODE_PERFORMANCE) {
+            showPerformanceNotification();
+            cancelGamingNotification();
+        } else if (mode == MODE_GAMING) {
+            showGamingNotification();
+            cancelPerformanceNotification();
+        } else {
             cancelPerformanceNotification();
             cancelGamingNotification();
-        } else {
-            enableBatterySaver(false);
-            if (mode == MODE_PERFORMANCE) {
-                showPerformanceNotification();
-                cancelGamingNotification();
-            } else if (mode == MODE_GAMING) {
-                showGamingNotification();
-                cancelPerformanceNotification();
-            } else {
-                cancelPerformanceNotification();
-                cancelGamingNotification();
-            }
         }
     }
 
@@ -275,20 +263,6 @@ public class PowerProfileUtil {
         }
     }
 
-    private void enableBatterySaver(boolean enable) {
-        PowerManager powerManager = (PowerManager) mContext.getSystemService(Context.POWER_SERVICE);
-        if (powerManager != null) {
-            boolean isBatterySaverEnabled = powerManager.isPowerSaveMode();
-            if (enable && !isBatterySaverEnabled) {
-                powerManager.setPowerSaveModeEnabled(true);
-                Log.d(TAG, "Battery Saver mode enabled.");
-            } else if (!enable && isBatterySaverEnabled) {
-                powerManager.setPowerSaveModeEnabled(false);
-                Log.d(TAG, "Battery Saver mode disabled.");
-            }
-        }
-    }
-
     private void setupNotificationChannel() {
         NotificationChannel channel = new NotificationChannel(
                 TAG,
@@ -342,31 +316,6 @@ public class PowerProfileUtil {
         Log.d(TAG, "Performance mode active set to: " + mode);
     }
 
-    private void registerBatterySaverObserver() {
-        mBatterySaverObserver = new ContentObserver(new Handler()) {
-            @Override
-            public void onChange(boolean selfChange) {
-                boolean isBatterySaverOn = Settings.Global.getInt(
-                        mContext.getContentResolver(),
-                        Settings.Global.LOW_POWER_MODE, 0) == 1;
-                if (isBatterySaverOn && (mCurrentMode == MODE_BALANCE || mCurrentMode == MODE_PERFORMANCE || mCurrentMode == MODE_GAMING)) {
-                    Log.d(TAG, "Battery saver enabled, switching to battery saver thermal mode.");
-                    mCurrentMode = MODE_BATTERY_SAVER;
-                    setMode(mCurrentMode);
-                }
-            }
-        };
-
-        mContext.getContentResolver().registerContentObserver(
-                Settings.Global.getUriFor(Settings.Global.LOW_POWER_MODE),
-                false,
-                mBatterySaverObserver
-        );
-    }
-
     public void cleanup() {
-        if (mBatterySaverObserver != null) {
-            mContext.getContentResolver().unregisterContentObserver(mBatterySaverObserver);
-        }
     }
 }
