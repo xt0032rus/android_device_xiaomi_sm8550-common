@@ -79,6 +79,16 @@ public class ThermalSettingsFragment extends PreferenceFragment
         });
         mMainSwitch.setChecked(mThermalUtils.isEnabled());
     }
+    
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        final View view = inflater.inflate(R.layout.thermal_layout, container, false);
+        final ViewGroup listContainer = view.findViewById(android.R.id.list_container);
+        final View preferenceView = super.onCreateView(inflater, listContainer, savedInstanceState);
+        listContainer.addView(preferenceView);
+        return view;
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -96,9 +106,11 @@ public class ThermalSettingsFragment extends PreferenceFragment
         super.onViewCreated(view, savedInstanceState);
 
         mAppsRecyclerView = view.findViewById(R.id.thermal_rv_view);
-        mAppsRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        mAppsRecyclerView.setAdapter(mAllPackagesAdapter);
-        mAppsRecyclerView.setVisibility(mThermalUtils.isEnabled() ? View.VISIBLE : View.GONE);
+        if (mAppsRecyclerView != null) {
+            mAppsRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+            mAppsRecyclerView.setAdapter(mAllPackagesAdapter);
+            mAppsRecyclerView.setVisibility(mThermalUtils.isEnabled() ? View.VISIBLE : View.GONE);
+        }
     }
 
     @Override
