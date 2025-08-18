@@ -35,6 +35,7 @@ import androidx.preference.PreferenceManager;
 
 import com.android.settingslib.applications.AppUtils;
 
+import com.xiaomi.settings.powertools.PowerProfileUtil;
 import com.xiaomi.settings.utils.FileUtils;
 
 import java.util.List;
@@ -45,6 +46,9 @@ public final class ThermalUtils {
     private static final String TAG = "ThermalUtils";
     private static final String THERMAL_CONTROL = "thermal_control_v2";
     private static final String THERMAL_ENABLED = "thermal_enabled";
+    private static final String PROP_THERMAL_CONTROLLED_BY = "sys.thermal.controlled_by";
+    private static final String CONTROLLED_BY_POWERTOOLS = "powertools";
+    private static final String CONTROLLED_BY_PERAPP = "perapp";
 
     public static final int STATE_DEFAULT = 0;
     public static final int STATE_BENCHMARK = 1;
@@ -87,6 +91,7 @@ public final class ThermalUtils {
     private Display mDisplay;
     private SharedPreferences mSharedPrefs;
     private Intent mServiceIntent;
+    private PowerProfileUtil mPowerProfileUtil;
 
     private static ThermalUtils sInstance;
 
@@ -97,6 +102,7 @@ public final class ThermalUtils {
         WindowManager mWindowManager = context.getSystemService(WindowManager.class);
         mDisplay = mWindowManager.getDefaultDisplay();
         mServiceIntent = new Intent(context, ThermalService.class);
+        mPowerProfileUtil = new PowerProfileUtil(context);
     }
 
     public static synchronized ThermalUtils getInstance(Context context) {
@@ -116,6 +122,7 @@ public final class ThermalUtils {
         if (enabled) {
             startService();
         } else {
+            // When disabling, ensure Power Profile takes back full control
             setDefaultThermalProfile();
             stopService();
         }
@@ -221,12 +228,24 @@ public final class ThermalUtils {
     }
 
     public void setDefaultThermalProfile() {
-        FileUtils.writeLine(THERMAL_SCONFIG, THERMAL_STATE_MAP.get(STATE_DEFAULT));
+        // Set the property to indicate Power Profile is in control
+        SystemProperties.set(PROP_THERMAL_CONTROLLED_BY, CONTROLLED_BY_POWERTOOLS);
+        // Ask Power Profile Util to restore its last state
+        mPowerProfileUtil.restoreState();
+        dlog("Restored control to Power Profile");
     }
 
     public void setThermalProfile(String packageName) {
         final int state = getStateForPackage(packageName);
-        FileUtils.writeLine(THERMAL_SCONFIG, THERMAL_STATE_MAP.get(state));
+        if (state != STATE_DEFAULT) {
+            // A specific per-app profile is set, so take control
+            SystemProperties.set(PROP_THERMAL_CONTROLLED_BY, CONTROLLED_BY_PERAPP);
+            FileUtils.writeLine(THERMAL_SCONFIG, THERMAL_STATE_MAP.get(state));
+            dlog("Per-app thermal took control for " + packageName + " with state " + state);
+        } else {
+            // The app is set to Default, so give control back to Power Profile
+            setDefaultThermalProfile();
+        }
     }
 
     private int getDefaultStateForPackage(String packageName) {

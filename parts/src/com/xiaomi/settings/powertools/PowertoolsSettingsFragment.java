@@ -190,12 +190,15 @@ public class PowertoolsSettingsFragment extends PreferenceFragmentCompat
 
     private void updateUI() {
         if (mPowerProfilePreference != null) {
-            boolean masterEnabled = mPowerProfileUtil.isMasterEnabled();
-            if (masterEnabled) {
+            // Check the override status instead of the master switch
+            boolean overridden = mPowerProfileUtil.isOverriddenByThermal();
+            if (overridden) {
                 mPowerProfilePreference.setEnabled(false);
-                mPowerProfilePreference.setSummary(getString(R.string.powerprofile_tile_disabled_subtitle));
+                mPowerProfilePreference.setSummary(getString(R.string.powerprofile_overridden_subtitle));
             } else {
                 mPowerProfilePreference.setEnabled(true);
+                // Make sure to fetch the current mode to display the correct label
+                mPowerProfileUtil.getManagedMode();
                 mPowerProfilePreference.setSummary(mPowerProfileUtil.getModeLabel());
             }
         }

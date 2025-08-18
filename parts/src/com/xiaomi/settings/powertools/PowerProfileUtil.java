@@ -48,6 +48,9 @@ public class PowerProfileUtil {
     private static final String THERMAL_SCONFIG = "/sys/class/thermal/thermal_message/sconfig";
     public static final String THERMAL_ENABLED_KEY = "thermal_enabled";
     private static final String SYS_PROP = "sys.perf_mode_active";
+    public static final String PROP_THERMAL_CONTROLLED_BY = "sys.thermal.controlled_by";
+    private static final String CONTROLLED_BY_POWERTOOLS = "powertools";
+    private static final String CONTROLLED_BY_PERAPP = "perapp";
     private static final int NOTIFICATION_ID_PERFORMANCE = 1001;
     private static final int NOTIFICATION_ID_GAMING = 1002;
 
@@ -120,6 +123,9 @@ public class PowerProfileUtil {
     }
 
     public void setMode(int mode) {
+        // Explicitly set that Powertools is in control
+        SystemProperties.set(PROP_THERMAL_CONTROLLED_BY, CONTROLLED_BY_POWERTOOLS);
+
         mCurrentMode = mode;
         int thermalValue;
         switch (mode) {
@@ -175,6 +181,24 @@ public class PowerProfileUtil {
             setMode(mCurrentMode);
         }
         return mCurrentMode;
+    }
+
+    /**
+     * Re-applies the last known Power Profile mode.
+     * This is called when Per-App Thermal returns control.
+     */
+    public void restoreState() {
+        Log.d(TAG, "Restoring Power Profile state.");
+        // We get the last managed mode and re-apply it.
+        setMode(getManagedMode());
+    }
+
+    /**
+     * Checks if Per-App Thermal has temporarily taken control.
+     * @return true if Per-App Thermal is active, false otherwise.
+     */
+    public boolean isOverriddenByThermal() {
+        return CONTROLLED_BY_PERAPP.equals(SystemProperties.get(PROP_THERMAL_CONTROLLED_BY));
     }
 
     public boolean isMasterEnabled() {

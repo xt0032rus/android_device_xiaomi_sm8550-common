@@ -31,33 +31,19 @@ import com.xiaomi.settings.R;
 public class PowerProfileTileService extends TileService {
     private static final String TAG = "PowerProfileTileService";
     private PowerProfileUtil mManager;
-    private SharedPreferences mSharedPrefs;
-    private SharedPreferences.OnSharedPreferenceChangeListener mPrefListener;
 
     @Override
     public void onCreate() {
         super.onCreate();
         mManager = new PowerProfileUtil(this);
-        mSharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
-
-        mPrefListener = (sharedPreferences, key) -> {
-            if (PowerProfileUtil.THERMAL_ENABLED_KEY.equals(key)) {
-                if (sharedPreferences.getBoolean(PowerProfileUtil.THERMAL_ENABLED_KEY, false)) {
-                    updateTileDisabled();
-                } else {
-                    updateTile();
-                }
-            }
-        };
-        mSharedPrefs.registerOnSharedPreferenceChangeListener(mPrefListener);
     }
 
     @Override
     public void onStartListening() {
         super.onStartListening();
 
-        boolean isMasterEnabled = mManager.isMasterEnabled();
-        if (isMasterEnabled) {
+        // Check if Per-App thermal has taken control
+        if (mManager.isOverriddenByThermal()) {
             updateTileDisabled();
         } else {
             mManager.getManagedMode();
@@ -67,8 +53,8 @@ public class PowerProfileTileService extends TileService {
 
     @Override
     public void onClick() {
-        if (mManager.isMasterEnabled()) {
-            return;
+        if (mManager.isOverriddenByThermal()) {
+            return; // Do nothing if overridden
         }
         mManager.toggleMode();
         updateTile();
@@ -112,16 +98,13 @@ public class PowerProfileTileService extends TileService {
             tile.setState(Tile.STATE_UNAVAILABLE);
             tile.setIcon(Icon.createWithResource(this, R.drawable.ic_thermal_balance));
             tile.setLabel(getString(R.string.powerprofile_tile_label));
-            tile.setSubtitle(getString(R.string.powerprofile_tile_disabled_subtitle));
+            tile.setSubtitle(getString(R.string.powerprofile_overridden_subtitle));
             tile.updateTile();
         }
     }
 
     @Override
     public void onDestroy() {
-        if (mSharedPrefs != null && mPrefListener != null) {
-            mSharedPrefs.unregisterOnSharedPreferenceChangeListener(mPrefListener);
-        }
         if (mManager != null) {
             mManager.cleanup();
         }
