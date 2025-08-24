@@ -302,4 +302,7 @@
 
      <!-- PowerOffAlarmService -->
     <bool name="config_powerOffAlarmEnabled">true</bool>
+
+    <!-- Pocket Lock -->
+    <bool name="config_pocketModeSupported">true</bool>
 </resources>
