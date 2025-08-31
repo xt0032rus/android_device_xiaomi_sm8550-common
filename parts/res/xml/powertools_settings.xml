@@ -105,7 +105,7 @@
             android:title="Max Frequency"
             android:entries="@array/cpu_big_freq_entries"
             android:entryValues="@array/cpu_big_freq_values"
-            android:defaultValue="2803200"
+            android:defaultValue="2707200"
             android:summary="%s" />
 
         <ListPreference
@@ -136,7 +136,7 @@
             android:title="Max Frequency"
             android:entries="@array/cpu_prime_freq_entries"
             android:entryValues="@array/cpu_prime_freq_values"
-            android:defaultValue="3187200"
+            android:defaultValue="2956800"
             android:summary="%s" />
 
         <ListPreference
@@ -150,4 +150,3 @@
     </PreferenceCategory>
 
 </PreferenceScreen>
-

@@ -133,7 +133,6 @@
         <item>2457MHz</item>
         <item>2592MHz</item>
         <item>2707MHz</item>
-        <item>2803MHz</item>
     </string-array>
     <string-array name="cpu_big_freq_values" translatable="false">
         <item>499200</item>
@@ -155,7 +154,6 @@
         <item>2457600</item>
         <item>2592000</item>
         <item>2707200</item>
-        <item>2803200</item>
     </string-array>
  
     <!-- CPU Prime Cluster Frequencies -->
@@ -180,7 +178,6 @@
         <item>2726MHz</item>
         <item>2841MHz</item>
         <item>2956MHz</item>
-        <item>3187MHz</item>
     </string-array>
     <string-array name="cpu_prime_freq_values" translatable="false">
         <item>595200</item>
@@ -203,7 +200,6 @@
         <item>2726400</item>
         <item>2841600</item>
         <item>2956800</item>
-        <item>3187200</item>
     </string-array>
  
     <!-- CPU Governor Options (for all clusters) -->

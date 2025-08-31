@@ -32,11 +32,11 @@ public class PowertoolBootReceiver extends BroadcastReceiver {
     private static final String CPU_LITTLE_DEFAULT_GOV = "walt";
 
     private static final String CPU_BIG_DEFAULT_MIN = "499200";
-    private static final String CPU_BIG_DEFAULT_MAX = "2803200";
+    private static final String CPU_BIG_DEFAULT_MAX = "2707200";
     private static final String CPU_BIG_DEFAULT_GOV = "walt";
 
     private static final String CPU_PRIME_DEFAULT_MIN = "595200";
-    private static final String CPU_PRIME_DEFAULT_MAX = "3187200";
+    private static final String CPU_PRIME_DEFAULT_MAX = "2956800";
     private static final String CPU_PRIME_DEFAULT_GOV = "walt";
 
     @Override
