@@ -73,6 +73,13 @@ public class BootCompletedReceiver extends BroadcastReceiver {
             Log.e(TAG, "Failed to start HyperChargeService", e);
         }
 
+        try {
+            com.xiaomi.settings.utils.GestureUtils.init(context);
+            if (DEBUG) Log.d(TAG, "GestureUtils initialized at boot");
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to initialize GestureUtils", e);
+        }
+
         final DisplayManager displayManager = context.getSystemService(DisplayManager.class);
         displayManager.overrideHdrTypes(Display.DEFAULT_DISPLAY,
                 new int[] {HdrCapabilities.HDR_TYPE_DOLBY_VISION, HdrCapabilities.HDR_TYPE_HDR10,
