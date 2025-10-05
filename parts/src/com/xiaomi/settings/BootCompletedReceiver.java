@@ -31,6 +31,7 @@ import com.xiaomi.settings.utils.ComponentUtils;
 public class BootCompletedReceiver extends BroadcastReceiver {
     private static final String TAG = "XiaomiParts";
     private static final boolean DEBUG = true;
+    private static final int GESTURE_INIT_DELAY_MS = 5000; // 5 seconds
 
     @Override
     public void onReceive(final Context context, Intent intent) {
@@ -85,8 +86,10 @@ public class BootCompletedReceiver extends BroadcastReceiver {
         }
 
         try {
-            com.xiaomi.settings.utils.GestureUtils.init(context);
-            if (DEBUG) Log.d(TAG, "GestureUtils initialized at boot");
+            new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                if (DEBUG) Log.d(TAG, "Initializing GestureUtils after delay");
+                com.xiaomi.settings.utils.GestureUtils.init(context);
+            }, GESTURE_INIT_DELAY_MS);
         } catch (Exception e) {
             Log.e(TAG, "Failed to initialize GestureUtils", e);
         }
