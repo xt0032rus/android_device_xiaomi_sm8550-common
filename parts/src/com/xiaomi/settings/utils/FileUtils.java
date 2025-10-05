@@ -96,6 +96,17 @@ public final class FileUtils {
     }
 
     /**
+     * Writes the given integer value into the given file
+     *
+     * @return true on success, false on failure
+     */
+    public static boolean writeLine(String fileName, int value) {
+        // Simply convert the int to a String and call the existing method.
+        // This avoids duplicating the file writing logic.
+        return writeLine(fileName, String.valueOf(value));
+    }
+
+    /**
      * Checks whether the given file exists
      *
      * @return true if exists, false if not

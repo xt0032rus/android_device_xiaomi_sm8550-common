@@ -13,6 +13,9 @@ genfscon proc "/perflock_records" u:object_r:vendor_proc_perflock_records:s0
 # Charger
 genfscon sysfs /class/power_supply/battery/constant_charge_current    u:object_r:vendor_sysfs_power_supply:s0
 
+# Panel Orientation
+genfscon sysfs /devices/virtual/touch/touch_dev/panel_orientation u:object_r:vendor_sysfs_sensors:s0
+
 # Sensors
 genfscon sysfs /devices/virtual/touch/touch_dev/fod_longpress_gesture_enabled u:object_r:vendor_sysfs_sensors:s0
 genfscon sysfs /devices/virtual/touch/touch_dev/fod_press_status u:object_r:vendor_sysfs_sensors:s0

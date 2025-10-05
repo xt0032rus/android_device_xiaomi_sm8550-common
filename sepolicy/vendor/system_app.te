@@ -34,5 +34,5 @@ allow system_app vendor_sysfs_power_supply:dir search;
 allow system_app vendor_sysfs_battery_supply:file { read write open setattr getattr };
 allow system_app vendor_sysfs_battery_supply:dir search;
 
-# Gesture Utils
+# Gestures
 allow system_app vendor_sysfs_sensors:file rw_file_perms;
