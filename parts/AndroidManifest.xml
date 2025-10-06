@@ -130,6 +130,22 @@
                 android:resource="@string/auto_hbm_summary" />
         </activity>
 
+        <!-- Edge Rejection -->
+        <activity
+            android:name=".touch.EdgeRejectionSettingsActivity"
+            android:label="@string/edge_rejection_title"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.android.settings.action.IA_SETTINGS" />
+            </intent-filter>
+            <meta-data
+                android:name="com.android.settings.category"
+                android:value="com.android.settings.category.ia.display" />
+            <meta-data
+                android:name="com.android.settings.summary"
+                android:resource="@string/edge_rejection_summary" />
+        </activity>
+
         <!-- Auto HBM service -->
         <service
             android:name=".autohbm.AutoHbmService"

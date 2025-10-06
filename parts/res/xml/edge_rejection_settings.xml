@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+     Copyright (C) 2025 TheMysticle
+
+     SPDX-License-Identifier: Apache-2.0
+-->
+<PreferenceScreen
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:title="@string/edge_rejection_title">
+
+    <com.android.settingslib.widget.MainSwitchPreference
+        android:key="edge_rejection_status"
+        android:title="@string/edge_rejection_title"
+        android:summary="@string/edge_rejection_summary"
+        android:defaultValue="true" />
+
+</PreferenceScreen>

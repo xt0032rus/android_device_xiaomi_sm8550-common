@@ -52,7 +52,11 @@
     <string name="auto_hbm_enable_time_title">Enable time</string>
     <string name="auto_hbm_enable_time_summary">Duration in seconds that the light threshold must be continuously met to activate HBM</string>
     <string name="auto_hbm_disable_time_title">Disable time</string>
-    <string name="auto_hbm_disable_time_summary">Duration in seconds for which HBM is deactivated if the light threshold falls below the set level</string>   
+    <string name="auto_hbm_disable_time_summary">Duration in seconds for which HBM is deactivated if the light threshold falls below the set level</string>
+
+    <!-- Edge Rejection -->
+    <string name="edge_rejection_title">Edge rejection</string>
+    <string name="edge_rejection_summary">Prevent accidental touches on the screen edges</string>   
 
     <!-- Thermal Profiles -->
     <string name="thermal_title">Per-App Thermal Profile</string>

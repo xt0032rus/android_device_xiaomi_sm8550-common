@@ -16,6 +16,9 @@ genfscon sysfs /class/power_supply/battery/constant_charge_current    u:object_r
 # Panel Orientation
 genfscon sysfs /devices/virtual/touch/touch_dev/panel_orientation u:object_r:vendor_sysfs_sensors:s0
 
+# Edge Rejection
+genfscon sysfs /devices/virtual/touch/touch_dev/grip_rejection u:object_r:vendor_sysfs_sensors:s0
+
 # Sensors
 genfscon sysfs /devices/virtual/touch/touch_dev/fod_longpress_gesture_enabled u:object_r:vendor_sysfs_sensors:s0
 genfscon sysfs /devices/virtual/touch/touch_dev/fod_press_status u:object_r:vendor_sysfs_sensors:s0

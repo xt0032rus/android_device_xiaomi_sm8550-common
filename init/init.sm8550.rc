@@ -17,6 +17,7 @@ on boot
     chown system system /sys/class/touch/touch_dev/gesture_single_tap_statue
     chown system system /dev/xiaomi-touch
     chown system system /sys/class/touch/touch_dev/panel_orientation
+    chown system system /sys/class/touch/touch_dev/grip_rejection
 
     chmod 0664 /sys/devices/virtual/mi_display/disp_feature/disp-DSI-0/disp_param
     chmod 0660 /sys/devices/virtual/touch/touch_dev/bump_sample_rate
@@ -29,6 +30,7 @@ on boot
     chmod 0660 /sys/class/touch/touch_dev/gesture_single_tap_statue
     chmod 0660 /dev/xiaomi-touch
     chmod 0664 /sys/class/touch/touch_dev/panel_orientation
+    chmod 0664 /sys/class/touch/touch_dev/grip_rejection
 
     chown system system /sys/class/power_supply/battery/constant_charge_current
     chmod 0664 /sys/class/power_supply/battery/constant_charge_current

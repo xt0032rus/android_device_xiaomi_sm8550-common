@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2023 Paranoid Android
+ * Copyright (C) 2025 TheMysticle
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -9,12 +10,16 @@ package com.xiaomi.settings.touch;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.hardware.display.DisplayManager;
 import android.os.IBinder;
 import android.util.Log;
 import android.view.Display;
 import android.view.WindowManager;
 
+import androidx.preference.PreferenceManager;
+
+import com.xiaomi.settings.Constants;
 import com.xiaomi.settings.utils.FileUtils;
 
 public class TouchOrientationService extends Service {
@@ -53,20 +58,28 @@ public class TouchOrientationService extends Service {
             mDisplayManager.registerDisplayListener(mDisplayListener, null);
         }
 
-        // Initial write at service start
-        updateOrientation();
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         if (DEBUG) Log.d(TAG, "onStartCommand");
+
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        boolean isEdgeRejectionEnabled = prefs.getBoolean(Constants.KEY_EDGE_REJECTION, true);
+
+        if (!isEdgeRejectionEnabled) {
+            if (DEBUG) Log.d(TAG, "Edge rejection is disabled, stopping service.");
+            stopSelf();
+            return START_NOT_STICKY;
+        }
+
         updateOrientation();
         return START_STICKY;
     }
 
     @Override
     public void onDestroy() {
-        if (DEBUG) Log.d(TAG, "onDestroy");
+        if (DEBUG) Log.d(TAG, "Service destroyed, cleaning up listeners.");
         if (mDisplayManager != null && mDisplayListener != null) {
             mDisplayManager.unregisterDisplayListener(mDisplayListener);
         }
