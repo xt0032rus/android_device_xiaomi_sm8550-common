@@ -1,0 +1,7 @@
+# Camera
+allow system_server hal_camera:binder transfer;
+allow system_server hal_camera:binder { call transfer };
+allow system_server hal_camera:fd *;
+
+allow system_server isolated_compute_app:unix_stream_socket { getopt };
+rw_dir_file(system_server, vndbinder_device)
