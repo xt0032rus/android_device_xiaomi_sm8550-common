@@ -8,8 +8,11 @@ allow vendorcodec hal_configstore_default:binder call;
 allow vendorcodec hal_sensors_hwservice:hwservice_manager find;
 allow vendorcodec vendor_sysfs_kgsl:file r_file_perms;
 get_prop(vendorcodec, vendor_display_prop)
+allow vendorcodec graphics_config_prop:file { read open getattr map };
+allow vendorcodec graphics_config_writable_prop:file { read open getattr map };
 hal_client_domain(vendorcodec, hal_allocator)
 hal_client_domain(vendorcodec, hal_graphics_allocator)
+hal_client_domain(vendorcodec, vendor_hal_qspmhal)
 hal_client_domain(vendorcodec, hal_sensors)
 hal_server_domain(vendorcodec, hal_codec2)
 init_daemon_domain(vendorcodec)
