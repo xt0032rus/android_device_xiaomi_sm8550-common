@@ -12,6 +12,7 @@
 /vendor/lib/rfsa/adsp/(.*)? u:object_r:same_process_hal_file:s0
 
 # DisplayFeature
+/dev/mi_display/disp_feature u:object_r:vendor_displayfeature_device:s0
 /sys/devices/virtual/mi_display/disp_feature/disp-DSI-+[0-1](/.*)? u:object_r:vendor_sysfs_displayfeature:s0
 
 # Dumpstate
