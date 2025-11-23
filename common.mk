@@ -26,6 +26,10 @@ PRODUCT_PACKAGES += \
     otapreopt_script \
     checkpoint_gc
 
+# Dolby Audio
+PRODUCT_PACKAGES += \
+    XiaomiDolby
+    
 # Audio
 PRODUCT_PACKAGES += \
     android.hardware.audio@7.1-impl \
