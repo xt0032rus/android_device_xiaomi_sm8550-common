@@ -7,6 +7,7 @@
 #pragma once
 
 #include "SensorNotifier.h"
+#include "Config.h"
 
 class AodNotifier : public SensorNotifier {
   public:

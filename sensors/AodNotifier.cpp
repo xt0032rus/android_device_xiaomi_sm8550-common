@@ -11,11 +11,13 @@
 #include <display/drm/mi_disp.h>
 #include <poll.h>
 #include <sys/ioctl.h>
+#include <bitset>
+#include <cerrno>
+#include <cstring>
 
 #include "AodNotifier.h"
 #include "SensorNotifierUtils.h"
-
-#define DISP_FEATURE_PATH "/dev/mi_display/disp_feature"
+#include "Config.h"
 
 using android::hardware::Return;
 using android::hardware::Void;
@@ -24,23 +26,42 @@ using android::hardware::sensors::V1_0::Event;
 namespace {
 
 void requestDozeBrightness(int fd, __u32 doze_brightness) {
+    if (fd < 0) {
+        LOG(ERROR) << "Invalid file descriptor for doze brightness request";
+        return;
+    }
+    
     disp_doze_brightness_req req;
     req.base.flag = 0;
     req.base.disp_id = MI_DISP_PRIMARY;
     req.doze_brightness = doze_brightness;
-    ioctl(fd, MI_DISP_IOCTL_SET_DOZE_BRIGHTNESS, &req);
+    
+    if (ioctl(fd, MI_DISP_IOCTL_SET_DOZE_BRIGHTNESS, &req) == -1) {
+        LOG(ERROR) << "Failed to set doze brightness, errno: " << errno << " - " << strerror(errno);
+    } else {
+        LOG(VERBOSE) << "Doze brightness set to: " << doze_brightness;
+    }
 }
 
 class AodSensorCallback : public IEventQueueCallback {
   public:
     AodSensorCallback() {
-        disp_fd_ = android::base::unique_fd(open(DISP_FEATURE_PATH, O_RDWR));
+        auto& config = Config::getInstance().getSettings();
+        disp_fd_ = android::base::unique_fd(open(config.displayDevicePath.c_str(), O_RDWR));
         if (disp_fd_.get() == -1) {
-            LOG(ERROR) << "failed to open " << DISP_FEATURE_PATH;
+            LOG(ERROR) << "Failed to open " << config.displayDevicePath << ", errno: " << errno << " - " << strerror(errno);
+        } else {
+            LOG(INFO) << "Successfully opened display feature device: " << config.displayDevicePath;
         }
     }
 
     Return<void> onEvent(const Event& e) {
+        if (disp_fd_.get() == -1) {
+            LOG(ERROR) << "Display FD not available for event processing";
+            return Void();
+        }
+        
+        LOG(VERBOSE) << "Received AOD sensor event with scalar: " << e.u.scalar;
         requestDozeBrightness(disp_fd_.get(), (e.u.scalar == 3 || e.u.scalar == 5)
                                                       ? DOZE_BRIGHTNESS_LBM
                                                       : DOZE_BRIGHTNESS_HBM);
@@ -62,69 +83,130 @@ AodNotifier::~AodNotifier() {
 }
 
 void AodNotifier::pollingFunction() {
+    LOG(INFO) << "AodNotifier polling thread started";
+    
+    auto& config = Config::getInstance().getSettings();
     Result res;
-
-    android::base::unique_fd disp_fd_ = android::base::unique_fd(open(DISP_FEATURE_PATH, O_RDWR));
+    
+    android::base::unique_fd disp_fd_ = android::base::unique_fd(open(config.displayDevicePath.c_str(), O_RDWR));
+    
     if (disp_fd_.get() == -1) {
-        LOG(ERROR) << "failed to open " << DISP_FEATURE_PATH;
+        LOG(ERROR) << "Failed to open " << config.displayDevicePath << ", errno: " << errno << " - " << strerror(errno);
+        return;
     }
 
-    // Register for power events
     disp_event_req req;
     req.base.flag = 0;
     req.base.disp_id = MI_DISP_PRIMARY;
     req.type = MI_DISP_EVENT_POWER;
-    ioctl(disp_fd_.get(), MI_DISP_IOCTL_REGISTER_EVENT, &req);
+    
+    if (ioctl(disp_fd_.get(), MI_DISP_IOCTL_REGISTER_EVENT, &req) == -1) {
+        LOG(ERROR) << "Failed to register display event, errno: " << errno << " - " << strerror(errno);
+        return;
+    }
 
     struct pollfd dispEventPoll = {
             .fd = disp_fd_.get(),
-            .events = POLLIN,
+            .events = POLLIN | POLLERR,
             .revents = 0,
     };
 
-    while (mActive) {
-        int rc = poll(&dispEventPoll, 1, -1);
+    bool sensorEnabled = false;
+    int consecutiveErrors = 0;
+
+    while (mActive.load()) {
+        int rc = poll(&dispEventPoll, 1, config.pollTimeoutMs);
+        
         if (rc < 0) {
-            LOG(ERROR) << "failed to poll " << DISP_FEATURE_PATH << ", err: " << rc;
+            if (errno == EINTR) {
+                continue;
+            }
+            LOG(ERROR) << "Failed to poll display event, errno: " << errno << " - " << strerror(errno);
+            if (++consecutiveErrors >= config.maxConsecutiveErrors) {
+                LOG(ERROR) << "Too many consecutive errors, stopping AodNotifier";
+                break;
+            }
+            std::this_thread::sleep_for(std::chrono::milliseconds(config.errorRetryDelayMs));
+            continue;
+        }
+        
+        consecutiveErrors = 0;
+
+        if (rc == 0) {
+            continue;
+        }
+
+        if (dispEventPoll.revents & POLLERR) {
+            LOG(ERROR) << "Poll error on display fd";
+            continue;
+        }
+
+        if (!(dispEventPoll.revents & POLLIN)) {
             continue;
         }
 
         std::shared_ptr<disp_event_resp> response = parseDispEvent(disp_fd_.get());
         if (response == nullptr) {
+            LOG(ERROR) << "Failed to parse display event";
             continue;
         }
 
         if (response->base.type != MI_DISP_EVENT_POWER) {
-            LOG(ERROR) << "unexpected display event: " << response->base.type;
+            LOG(VERBOSE) << "Unexpected display event type: " << response->base.type;
             continue;
         }
 
         int value = response->data[0];
-        LOG(VERBOSE) << "received data: " << std::bitset<8>(value);
+        LOG(VERBOSE) << "Received display power event: " << std::bitset<8>(value);
 
-        switch (response->data[0]) {
+        switch (value) {
             case MI_DISP_POWER_LP1:
-                FALLTHROUGH_INTENDED;
             case MI_DISP_POWER_LP2:
-                res = mQueue->enableSensor(mSensorHandle, 20000 /* sample period */,
-                                           0 /* latency */);
-                if (res != Result::OK) {
-                    LOG(ERROR) << "failed to enable sensor";
+                if (!sensorEnabled) {
+                    res = mQueue->enableSensor(mSensorHandle, 
+                                             config.sensorSamplePeriod,
+                                             config.sensorLatency);
+                    if (res != Result::OK) {
+                        LOG(ERROR) << "Failed to enable AOD sensor, result: " << static_cast<int>(res);
+                    } else {
+                        sensorEnabled = true;
+                        LOG(INFO) << "AOD sensor enabled for LP mode (period: " 
+                                  << config.sensorSamplePeriod << "us)";
+                    }
                 }
                 break;
             case MI_DISP_POWER_ON:
-                res = mQueue->disableSensor(mSensorHandle);
-                if (res != Result::OK) {
-                    LOG(ERROR) << "failed to disable sensor";
+                if (sensorEnabled) {
+                    res = mQueue->disableSensor(mSensorHandle);
+                    if (res != Result::OK) {
+                        LOG(ERROR) << "Failed to disable AOD sensor, result: " << static_cast<int>(res);
+                    } else {
+                        sensorEnabled = false;
+                        LOG(INFO) << "AOD sensor disabled for ON mode";
+                    }
                 }
                 requestDozeBrightness(disp_fd_.get(), DOZE_TO_NORMAL);
                 break;
             default:
-                res = mQueue->disableSensor(mSensorHandle);
-                if (res != Result::OK) {
-                    LOG(ERROR) << "failed to disable sensor";
+                if (sensorEnabled) {
+                    res = mQueue->disableSensor(mSensorHandle);
+                    if (res != Result::OK) {
+                        LOG(ERROR) << "Failed to disable AOD sensor in default case, result: " << static_cast<int>(res);
+                    } else {
+                        sensorEnabled = false;
+                        LOG(INFO) << "AOD sensor disabled by default case";
+                    }
                 }
                 break;
         }
     }
+    
+    if (sensorEnabled && mQueue != nullptr) {
+        res = mQueue->disableSensor(mSensorHandle);
+        if (res != Result::OK) {
+            LOG(ERROR) << "Failed to disable sensor during cleanup";
+        }
+    }
+    
+    LOG(INFO) << "AodNotifier polling thread stopped";
 }

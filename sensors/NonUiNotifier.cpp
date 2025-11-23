@@ -11,11 +11,15 @@
 #include <linux/xiaomi_touch.h>
 #include <poll.h>
 #include <sys/ioctl.h>
+#include <vector>
+#include <unistd.h>
+#include <fcntl.h>
+#include <cerrno>
+#include <cstring>
 
 #include "NonUiNotifier.h"
 #include "SensorNotifierUtils.h"
-
-#define TOUCH_DEV_PATH "/dev/xiaomi-touch"
+#include "Config.h"
 
 using android::hardware::Return;
 using android::hardware::Void;
@@ -26,18 +30,33 @@ namespace {
 class NonUiSensorCallback : public IEventQueueCallback {
   public:
     NonUiSensorCallback() {
-        touch_fd_ = android::base::unique_fd(open(TOUCH_DEV_PATH, O_RDWR));
+        auto& config = Config::getInstance().getSettings();
+        touch_fd_ = android::base::unique_fd(open(config.touchDevicePath.c_str(), O_RDWR));
         if (touch_fd_.get() == -1) {
-            LOG(ERROR) << "failed to open " << TOUCH_DEV_PATH;
+            LOG(ERROR) << "Failed to open " << config.touchDevicePath << ", errno: " << errno << " - " << strerror(errno);
+        } else {
+            LOG(INFO) << "Successfully opened touch device: " << config.touchDevicePath;
         }
     }
 
     Return<void> onEvent(const Event& e) {
+        if (touch_fd_.get() == -1) {
+            LOG(ERROR) << "Touch FD not available for event processing";
+            return Void();
+        }
+        
         struct touch_mode_request request = {
                 .mode = TOUCH_MODE_NONUI_MODE,
                 .value = static_cast<int>(e.u.scalar),
         };
-        ioctl(touch_fd_.get(), TOUCH_IOC_SET_CUR_VALUE, &request);
+        
+        LOG(VERBOSE) << "Setting non-UI touch mode to: " << request.value;
+        
+        if (ioctl(touch_fd_.get(), TOUCH_IOC_SET_CUR_VALUE, &request) == -1) {
+            LOG(ERROR) << "Failed to set touch mode, errno: " << errno << " - " << strerror(errno);
+        } else {
+            LOG(VERBOSE) << "Successfully set touch mode to: " << request.value;
+        }
 
         return Void();
     }
@@ -57,48 +76,205 @@ NonUiNotifier::~NonUiNotifier() {
 }
 
 void NonUiNotifier::pollingFunction() {
+    LOG(INFO) << "NonUiNotifier polling thread started";
+    
+    auto& config = Config::getInstance().getSettings();
     Result res;
+    bool sensorEnabled = false;
 
-    // Enable states of touchscreen sensors
     const std::vector<const char*> paths = {
             "/sys/class/touch/touch_dev/fod_longpress_gesture_enabled",
             "/sys/class/touch/touch_dev/gesture_single_tap_enabled",
             "/sys/class/touch/touch_dev/gesture_double_tap_enabled"};
 
-    pollfd* pollfds = new pollfd[paths.size()];
-    for (size_t i = 0; i < paths.size(); ++i) {
-        int fd = open(paths[i], O_RDONLY);
-        if (fd < 0) {
-            LOG(ERROR) << "failed to open " << paths[i] << " , err: " << fd;
-            mActive = false;
-            return;
-        }
+    std::vector<pollfd> pollfds;
+    std::vector<android::base::unique_fd> fds;
 
-        pollfds[i].fd = fd;
-        pollfds[i].events = POLLPRI;
+    // Инициализация файловых дескрипторов с улучшенной обработкой ошибок
+    for (const auto& path : paths) {
+        int fd = open(path, O_RDONLY | O_NONBLOCK);
+        if (fd < 0) {
+            LOG(WARNING) << "Failed to open " << path << ", errno: " << errno << " - " << strerror(errno);
+            continue;
+        }
+        
+        // Проверяем, что файл действительно доступен для чтения
+        char buffer;
+        ssize_t test_read = read(fd, &buffer, 1);
+        if (test_read < 0) {
+            LOG(WARNING) << "File " << path << " not readable, skipping. errno: " << errno;
+            close(fd);
+            continue;
+        }
+        lseek(fd, 0, SEEK_SET); // Возвращаемся в начало файла
+        
+        pollfd pfd = {
+            .fd = fd,
+            .events = POLLPRI | POLLERR,
+            .revents = 0
+        };
+        pollfds.push_back(pfd);
+        fds.emplace_back(fd);
+        
+        LOG(INFO) << "Monitoring touch gesture: " << path << " (fd: " << fd << ")";
     }
 
-    while (mActive) {
-        int rc = poll(pollfds, paths.size(), -1);
+    if (pollfds.empty()) {
+        LOG(ERROR) << "No valid file descriptors for polling after initialization";
+        return;
+    }
+
+    int consecutiveErrors = 0;
+    int consecutivePollErrors = 0;
+    const int MAX_CONSECUTIVE_POLL_ERRORS = 3;
+
+    while (mActive.load()) {
+        // Проверяем валидность файловых дескрипторов перед poll
+        bool hasInvalidFds = false;
+        for (size_t i = 0; i < pollfds.size(); ++i) {
+            if (fcntl(pollfds[i].fd, F_GETFD) == -1) {
+                LOG(ERROR) << "File descriptor " << pollfds[i].fd << " became invalid, removing from polling";
+                pollfds[i].fd = -1; // Помечаем как невалидный
+                hasInvalidFds = true;
+            }
+        }
+
+        // Удаляем невалидные дескрипторы
+        if (hasInvalidFds) {
+            auto new_end = std::remove_if(pollfds.begin(), pollfds.end(),
+                [](const pollfd& pfd) { return pfd.fd == -1; });
+            pollfds.erase(new_end, pollfds.end());
+            
+            if (pollfds.empty()) {
+                LOG(ERROR) << "All file descriptors became invalid, stopping NonUiNotifier";
+                break;
+            }
+        }
+
+        int rc = poll(pollfds.data(), pollfds.size(), config.pollTimeoutMs);
+        
         if (rc < 0) {
-            LOG(ERROR) << "failed to poll, err: " << rc;
+            if (errno == EINTR) {
+                continue;
+            }
+            
+            LOG(ERROR) << "Failed to poll touch gestures, errno: " << errno << " - " << strerror(errno);
+            consecutivePollErrors++;
+            
+            if (consecutivePollErrors >= MAX_CONSECUTIVE_POLL_ERRORS) {
+                LOG(ERROR) << "Too many consecutive poll errors, stopping NonUiNotifier";
+                break;
+            }
+            
+            std::this_thread::sleep_for(std::chrono::milliseconds(config.errorRetryDelayMs));
+            continue;
+        }
+        
+        consecutivePollErrors = 0; // Сбрасываем счетчик при успешном poll
+        consecutiveErrors = 0;
+
+        if (rc == 0) {
+            // Таймаут - нормальная ситуация, продолжаем
             continue;
         }
 
         bool enabled = false;
-        for (size_t i = 0; i < paths.size(); ++i) {
-            enabled = enabled || readBool(pollfds[i].fd);
-        }
-        if (enabled) {
-            res = mQueue->enableSensor(mSensorHandle, 20000 /* sample period */, 0 /* latency */);
-            if (res != Result::OK) {
-                LOG(ERROR) << "failed to enable sensor";
+        bool hasPollError = false;
+        std::vector<size_t> invalidIndices;
+        
+        for (size_t i = 0; i < pollfds.size(); ++i) {
+            if (pollfds[i].revents & POLLERR) {
+                LOG(ERROR) << "Poll error on fd: " << pollfds[i].fd << ", removing from polling";
+                invalidIndices.push_back(i);
+                hasPollError = true;
+                continue;
             }
-        } else {
+            
+            if (pollfds[i].revents & POLLPRI) {
+                bool currentState = readBool(pollfds[i].fd);
+                if (errno == EBADF) {
+                    LOG(ERROR) << "File descriptor " << pollfds[i].fd << " became bad, removing from polling";
+                    invalidIndices.push_back(i);
+                    hasPollError = true;
+                    continue;
+                }
+                
+                LOG(VERBOSE) << "Gesture state changed on fd " << pollfds[i].fd << ": " << currentState;
+                enabled = enabled || currentState;
+            }
+        }
+
+        // Удаляем невалидные дескрипторы после обработки ошибок
+        if (!invalidIndices.empty()) {
+            // Сортируем в обратном порядке для безопасного удаления
+            std::sort(invalidIndices.rbegin(), invalidIndices.rend());
+            for (size_t idx : invalidIndices) {
+                if (idx < pollfds.size()) {
+                    LOG(WARNING) << "Removing invalid fd from polling: " << pollfds[idx].fd;
+                    pollfds.erase(pollfds.begin() + idx);
+                }
+            }
+            
+            if (pollfds.empty()) {
+                LOG(ERROR) << "All file descriptors became invalid after error handling";
+                break;
+            }
+        }
+
+        if (hasPollError) {
+            consecutiveErrors++;
+            if (consecutiveErrors >= config.maxConsecutiveErrors) {
+                LOG(ERROR) << "Too many consecutive errors, stopping NonUiNotifier";
+                break;
+            }
+            continue;
+        }
+
+        consecutiveErrors = 0; // Сбрасываем счетчик ошибок при успешной обработке
+
+        // Управление сенсором на основе состояния жестов
+        if (enabled && !sensorEnabled) {
+            res = mQueue->enableSensor(mSensorHandle, 
+                                     config.sensorSamplePeriod, 
+                                     config.sensorLatency);
+            if (res != Result::OK) {
+                LOG(ERROR) << "Failed to enable non-UI sensor, result: " << static_cast<int>(res);
+                consecutiveErrors++;
+            } else {
+                sensorEnabled = true;
+                consecutiveErrors = 0;
+                LOG(INFO) << "Non-UI sensor enabled (period: " 
+                          << config.sensorSamplePeriod << "us)";
+            }
+        } else if (!enabled && sensorEnabled) {
             res = mQueue->disableSensor(mSensorHandle);
             if (res != Result::OK) {
-                LOG(ERROR) << "failed to disable sensor";
+                LOG(ERROR) << "Failed to disable non-UI sensor, result: " << static_cast<int>(res);
+                consecutiveErrors++;
+            } else {
+                sensorEnabled = false;
+                consecutiveErrors = 0;
+                LOG(INFO) << "Non-UI sensor disabled";
             }
         }
+        
+        // Если слишком много ошибок подряд - останавливаемся
+        if (consecutiveErrors >= config.maxConsecutiveErrors) {
+            LOG(ERROR) << "Too many consecutive operation errors, stopping NonUiNotifier";
+            break;
+        }
+    }
+    
+    // Cleanup
+    if (sensorEnabled && mQueue != nullptr) {
+        res = mQueue->disableSensor(mSensorHandle);
+        if (res != Result::OK) {
+            LOG(ERROR) << "Failed to disable sensor during cleanup";
+        }
+    }
+    
+    LOG(INFO) << "NonUiNotifier polling thread stopped";
+    if (!pollfds.empty()) {
+        LOG(INFO) << "Remaining active file descriptors: " << pollfds.size();
     }
 }

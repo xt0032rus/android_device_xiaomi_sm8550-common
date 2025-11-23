@@ -12,15 +12,17 @@ cc_binary {
 
     srcs: [
         "AodNotifier.cpp",
-        "NonUiNotifier.cpp",
+        "NonUiNotifier.cpp", 
         "SensorNotifier.cpp",
         "SensorNotifierUtils.cpp",
+        "Config.cpp",
+        "HealthMonitor.cpp",
         "main.cpp",
     ],
 
     shared_libs: [
         "libbase",
-        "libhidlbase",
+        "libhidlbase", 
         "libutils",
         "android.frameworks.sensorservice@1.0",
     ],
