@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Copyright (C) 2024 crDroid Android Project
+    SPDX-License-Identifier: Apache-2.0
+-->
+<PreferenceScreen
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:title="@string/hypercharge_title">
+
+    <com.android.settingslib.widget.MainSwitchPreference
+        android:key="hypercharge_status"
+        android:title="@string/hypercharge_main_switch_title"
+        android:defaultValue="true" />
+
+    <PreferenceCategory
+        android:title="@string/hypercharge_description_title">
+
+        <Preference
+            android:summary="@string/hypercharge_description_summary"
+            app:selectable="false"
+            xmlns:app="http://schemas.android.com/apk/res-auto"/>
+
+    </PreferenceCategory>
+
+</PreferenceScreen>
