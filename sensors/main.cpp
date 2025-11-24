@@ -175,6 +175,10 @@ int main(int argc, char** argv) {
     
     if (config.logLevel == "VERBOSE") {
         android::base::SetMinimumLogSeverity(android::base::VERBOSE);
+    } else if (config.logLevel == "DEBUG") {
+        android::base::SetMinimumLogSeverity(android::base::DEBUG);
+    } else if (config.logLevel == "WARNING") {
+        android::base::SetMinimumLogSeverity(android::base::WARNING);
     } else if (config.logLevel == "ERROR") {
         android::base::SetMinimumLogSeverity(android::base::ERROR);
     }
@@ -257,6 +261,7 @@ int main(int argc, char** argv) {
         heartbeatCounter++;
         
         auto now = std::chrono::steady_clock::now();
+        
         if (gAodNotifier && gAodNotifier->isActive()) {
             healthMonitor.updateHeartbeat("AodNotifier");
         }

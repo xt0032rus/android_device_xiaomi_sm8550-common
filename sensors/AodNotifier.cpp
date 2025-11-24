@@ -88,12 +88,16 @@ void AodNotifier::pollingFunction() {
     auto& config = Config::getInstance().getSettings();
     Result res;
     
-    android::base::unique_fd disp_fd_ = android::base::unique_fd(open(config.displayDevicePath.c_str(), O_RDWR));
+    android::base::unique_fd disp_fd_ = android::base::unique_fd(open(config.displayDevicePath.c_str(), O_RDWR | O_NONBLOCK));
     
     if (disp_fd_.get() == -1) {
         LOG(ERROR) << "Failed to open " << config.displayDevicePath << ", errno: " << errno << " - " << strerror(errno);
         return;
     }
+
+    off_t seek_result = lseek(disp_fd_.get(), 0, SEEK_CUR);
+    bool supports_seek = (seek_result != (off_t)-1);
+    LOG(INFO) << "Display device supports seek: " << supports_seek;
 
     disp_event_req req;
     req.base.flag = 0;
@@ -102,7 +106,9 @@ void AodNotifier::pollingFunction() {
     
     if (ioctl(disp_fd_.get(), MI_DISP_IOCTL_REGISTER_EVENT, &req) == -1) {
         LOG(ERROR) << "Failed to register display event, errno: " << errno << " - " << strerror(errno);
-        return;
+        LOG(WARNING) << "Continuing without event registration...";
+    } else {
+        LOG(INFO) << "Successfully registered display power events";
     }
 
     struct pollfd dispEventPoll = {
@@ -113,6 +119,8 @@ void AodNotifier::pollingFunction() {
 
     bool sensorEnabled = false;
     int consecutiveErrors = 0;
+    int consecutiveEmptyReads = 0;
+    const int MAX_CONSECUTIVE_EMPTY_READS = config.maxConsecutiveEmptyReads;
 
     while (mActive.load()) {
         int rc = poll(&dispEventPoll, 1, config.pollTimeoutMs);
@@ -138,6 +146,12 @@ void AodNotifier::pollingFunction() {
 
         if (dispEventPoll.revents & POLLERR) {
             LOG(ERROR) << "Poll error on display fd";
+            consecutiveErrors++;
+            if (consecutiveErrors >= config.maxConsecutiveErrors) {
+                LOG(ERROR) << "Too many poll errors, stopping AodNotifier";
+                break;
+            }
+            std::this_thread::sleep_for(std::chrono::milliseconds(config.displayEventRetryDelayMs));
             continue;
         }
 
@@ -147,9 +161,21 @@ void AodNotifier::pollingFunction() {
 
         std::shared_ptr<disp_event_resp> response = parseDispEvent(disp_fd_.get());
         if (response == nullptr) {
-            LOG(ERROR) << "Failed to parse display event";
+            consecutiveEmptyReads++;
+            if (consecutiveEmptyReads >= MAX_CONSECUTIVE_EMPTY_READS) {
+                LOG(WARNING) << "Too many consecutive empty reads (" << consecutiveEmptyReads 
+                            << "), possible device issue. Resetting counter.";
+                consecutiveEmptyReads = 0;
+                disp_fd_.reset(open(config.displayDevicePath.c_str(), O_RDWR | O_NONBLOCK));
+                if (disp_fd_.get() == -1) {
+                    LOG(ERROR) << "Failed to reopen display device";
+                    break;
+                }
+            }
             continue;
         }
+        
+        consecutiveEmptyReads = 0;
 
         if (response->base.type != MI_DISP_EVENT_POWER) {
             LOG(VERBOSE) << "Unexpected display event type: " << response->base.type;
@@ -157,12 +183,13 @@ void AodNotifier::pollingFunction() {
         }
 
         int value = response->data[0];
-        LOG(VERBOSE) << "Received display power event: " << std::bitset<8>(value);
+        LOG(INFO) << "Received display power event: " << std::bitset<8>(value) << " (" << value << ")";
 
         switch (value) {
             case MI_DISP_POWER_LP1:
             case MI_DISP_POWER_LP2:
                 if (!sensorEnabled) {
+                    LOG(INFO) << "Display entering low-power mode, enabling AOD sensor";
                     res = mQueue->enableSensor(mSensorHandle, 
                                              config.sensorSamplePeriod,
                                              config.sensorLatency);
@@ -175,8 +202,10 @@ void AodNotifier::pollingFunction() {
                     }
                 }
                 break;
+                
             case MI_DISP_POWER_ON:
                 if (sensorEnabled) {
+                    LOG(INFO) << "Display turning on, disabling AOD sensor";
                     res = mQueue->disableSensor(mSensorHandle);
                     if (res != Result::OK) {
                         LOG(ERROR) << "Failed to disable AOD sensor, result: " << static_cast<int>(res);
@@ -187,7 +216,9 @@ void AodNotifier::pollingFunction() {
                 }
                 requestDozeBrightness(disp_fd_.get(), DOZE_TO_NORMAL);
                 break;
+                
             default:
+                LOG(VERBOSE) << "Unhandled display power state: " << value;
                 if (sensorEnabled) {
                     res = mQueue->disableSensor(mSensorHandle);
                     if (res != Result::OK) {
@@ -202,6 +233,7 @@ void AodNotifier::pollingFunction() {
     }
     
     if (sensorEnabled && mQueue != nullptr) {
+        LOG(INFO) << "Disabling AOD sensor during shutdown";
         res = mQueue->disableSensor(mSensorHandle);
         if (res != Result::OK) {
             LOG(ERROR) << "Failed to disable sensor during cleanup";

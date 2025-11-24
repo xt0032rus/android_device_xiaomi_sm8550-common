@@ -37,22 +37,41 @@ bool readBool(int fd) {
 std::shared_ptr<disp_event_resp> parseDispEvent(int fd) {
     disp_event header;
     
-    if (lseek(fd, 0, SEEK_SET) == -1) {
-        LOG(ERROR) << "Failed to seek display event fd, errno: " << errno << " - " << strerror(errno);
+    ssize_t headerSize = read(fd, &header, sizeof(header));
+    
+    if (headerSize == 0) {
+        LOG(VERBOSE) << "No display event data available";
         return nullptr;
     }
     
-    ssize_t headerSize = read(fd, &header, sizeof(header));
+    if (headerSize < 0) {
+        if (errno == EAGAIN || errno == EWOULDBLOCK) {
+            return nullptr;
+        }
+        LOG(ERROR) << "Failed to read display event header, errno: " << errno << " - " << strerror(errno);
+        return nullptr;
+    }
+    
     if (headerSize != sizeof(header)) {
         LOG(ERROR) << "Unexpected display event header size: " << headerSize 
-                   << ", expected: " << sizeof(header) << ", errno: " << errno << " - " << strerror(errno);
+                   << ", expected: " << sizeof(header);
+        return nullptr;
+    }
+
+    if (header.length < sizeof(header)) {
+        LOG(ERROR) << "Invalid header length: " << header.length 
+                   << ", minimum expected: " << sizeof(header);
         return nullptr;
     }
 
     int dataLength = header.length - sizeof(header);
-    if (dataLength < 0 || dataLength > 1024) { // Reasonable upper limit
-        LOG(ERROR) << "Invalid data length: " << dataLength;
+    if (dataLength < 0) {
+        LOG(ERROR) << "Negative data length: " << dataLength;
         return nullptr;
+    }
+    
+    if (dataLength > 1024) {
+        LOG(WARNING) << "Large data length: " << dataLength << ", proceeding with caution";
     }
 
     std::shared_ptr<disp_event_resp> response(
@@ -71,10 +90,12 @@ std::shared_ptr<disp_event_resp> parseDispEvent(int fd) {
         ssize_t dataSize = read(fd, &response->data, dataLength);
         if (dataSize != dataLength) {
             LOG(ERROR) << "Unexpected display event data size: " << dataSize 
-                       << ", expected: " << dataLength << ", errno: " << errno << " - " << strerror(errno);
+                       << ", expected: " << dataLength;
             return nullptr;
         }
     }
 
+    LOG(VERBOSE) << "Successfully parsed display event type: " << header.type 
+                 << ", length: " << header.length;
     return response;
 }

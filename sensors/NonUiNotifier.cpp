@@ -90,7 +90,6 @@ void NonUiNotifier::pollingFunction() {
     std::vector<pollfd> pollfds;
     std::vector<android::base::unique_fd> fds;
 
-    // Инициализация файловых дескрипторов с улучшенной обработкой ошибок
     for (const auto& path : paths) {
         int fd = open(path, O_RDONLY | O_NONBLOCK);
         if (fd < 0) {
@@ -98,7 +97,6 @@ void NonUiNotifier::pollingFunction() {
             continue;
         }
         
-        // Проверяем, что файл действительно доступен для чтения
         char buffer;
         ssize_t test_read = read(fd, &buffer, 1);
         if (test_read < 0) {
@@ -106,7 +104,7 @@ void NonUiNotifier::pollingFunction() {
             close(fd);
             continue;
         }
-        lseek(fd, 0, SEEK_SET); // Возвращаемся в начало файла
+        lseek(fd, 0, SEEK_SET);
         
         pollfd pfd = {
             .fd = fd,
@@ -129,17 +127,15 @@ void NonUiNotifier::pollingFunction() {
     const int MAX_CONSECUTIVE_POLL_ERRORS = 3;
 
     while (mActive.load()) {
-        // Проверяем валидность файловых дескрипторов перед poll
         bool hasInvalidFds = false;
         for (size_t i = 0; i < pollfds.size(); ++i) {
             if (fcntl(pollfds[i].fd, F_GETFD) == -1) {
                 LOG(ERROR) << "File descriptor " << pollfds[i].fd << " became invalid, removing from polling";
-                pollfds[i].fd = -1; // Помечаем как невалидный
+                pollfds[i].fd = -1;
                 hasInvalidFds = true;
             }
         }
 
-        // Удаляем невалидные дескрипторы
         if (hasInvalidFds) {
             auto new_end = std::remove_if(pollfds.begin(), pollfds.end(),
                 [](const pollfd& pfd) { return pfd.fd == -1; });
@@ -170,11 +166,10 @@ void NonUiNotifier::pollingFunction() {
             continue;
         }
         
-        consecutivePollErrors = 0; // Сбрасываем счетчик при успешном poll
+        consecutivePollErrors = 0;
         consecutiveErrors = 0;
 
         if (rc == 0) {
-            // Таймаут - нормальная ситуация, продолжаем
             continue;
         }
 
@@ -204,9 +199,7 @@ void NonUiNotifier::pollingFunction() {
             }
         }
 
-        // Удаляем невалидные дескрипторы после обработки ошибок
         if (!invalidIndices.empty()) {
-            // Сортируем в обратном порядке для безопасного удаления
             std::sort(invalidIndices.rbegin(), invalidIndices.rend());
             for (size_t idx : invalidIndices) {
                 if (idx < pollfds.size()) {
@@ -230,9 +223,8 @@ void NonUiNotifier::pollingFunction() {
             continue;
         }
 
-        consecutiveErrors = 0; // Сбрасываем счетчик ошибок при успешной обработке
+        consecutiveErrors = 0;
 
-        // Управление сенсором на основе состояния жестов
         if (enabled && !sensorEnabled) {
             res = mQueue->enableSensor(mSensorHandle, 
                                      config.sensorSamplePeriod, 
@@ -258,14 +250,12 @@ void NonUiNotifier::pollingFunction() {
             }
         }
         
-        // Если слишком много ошибок подряд - останавливаемся
         if (consecutiveErrors >= config.maxConsecutiveErrors) {
             LOG(ERROR) << "Too many consecutive operation errors, stopping NonUiNotifier";
             break;
         }
     }
     
-    // Cleanup
     if (sensorEnabled && mQueue != nullptr) {
         res = mQueue->disableSensor(mSensorHandle);
         if (res != Result::OK) {

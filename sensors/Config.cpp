@@ -63,6 +63,9 @@ void Config::applySettings() {
     mSettings.recoveryRetryDelayMs = getInt("recovery_retry_delay_ms", 200);
     mSettings.enableAutoRecovery = getBool("enable_auto_recovery", true);
     
+    mSettings.maxConsecutiveEmptyReads = getInt("max_consecutive_empty_reads", 10);
+    mSettings.displayEventRetryDelayMs = getInt("display_event_retry_delay_ms", 100);
+    
     mSettings.touchDevicePath = getString("touch_device_path", "/dev/xiaomi-touch");
     mSettings.displayDevicePath = getString("display_device_path", "/dev/mi_display/disp_feature");
 }

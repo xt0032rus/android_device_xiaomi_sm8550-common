@@ -48,6 +48,10 @@
 # Thermal
 /vendor/bin/mi_thermald u:object_r:mi_thermald_exec:s0
 /data/vendor/thermal(/.*)? u:object_r:thermal_data_file:s0
+/vendor/etc/thermal-engine.conf u:object_r:vendor_configs_file:s0
 /sys/{class,devices/virtual}/thermal/thermal_message/flash_state u:object_r:sys_thermal_flash_state:s0
 /sys/{class,devices/virtual}/thermal/thermal_message/torch_real_level u:object_r:sys_thermal_torch_real_level:s0
 /sys/{class,devices/virtual}/thermal/thermal_message/wifi_limit u:object_r:sys_thermal_wifi_limit:s0
+/sys/class/power_supply/usb/pd_allowed u:object_r:vendor_sysfs_usbpd_device:s0
+/sys/class/power_supply/battery/constant_charge_current_max u:object_r:vendor_sysfs_power_supply:s0
+/sys/class/qcom-battery/restricted_charging u:object_r:vendor_sysfs_qcom_battery:s0

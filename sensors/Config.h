@@ -27,13 +27,15 @@ public:
         
         int sensorSamplePeriod = 20000;
         int sensorLatency = 0;
-        
         int healthCheckIntervalSec = 30;
         int componentTimeoutSec = 45;
         int maxRestartAttempts = 5;
         
         int recoveryRetryDelayMs = 200;
         bool enableAutoRecovery = true;
+
+        int maxConsecutiveEmptyReads = 10;
+        int displayEventRetryDelayMs = 100;
         
         std::string touchDevicePath = "/dev/xiaomi-touch";
         std::string displayDevicePath = "/dev/mi_display/disp_feature";

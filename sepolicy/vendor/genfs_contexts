@@ -12,3 +12,11 @@ genfscon sysfs "/devices/platform/soc/ac0000.qcom,qupv3_1_geni_se/a90000.spi/spi
 genfscon sysfs "/devices/platform/soc/ac0000.qcom,qupv3_1_geni_se/a90000.spi/spi_master/spi1/spi1.0/wakeup" u:object_r:sysfs_wakeup:s0
 genfscon sysfs "/devices/platform/soc/c42d000.qcom,spmi/spmi-0/0-00/c42d000.qcom,spmi:qcom,pmk8550@0:pon_hlos@1300/c42d000.qcom,spmi:qcom,pmk8550@0:pon_hlos@1300:pwrkey-bark/wakeup" u:object_r:sysfs_wakeup:s0
 genfscon sysfs "/devices/platform/soc/c42d000.qcom,spmi/spmi-0/0-00/c42d000.qcom,spmi:qcom,pmk8550@0:pon_hlos@1300/c42d000.qcom,spmi:qcom,pmk8550@0:pon_hlos@1300:pwrkey-resin-bark/wakeup" u:object_r:sysfs_wakeup:s0
+
+# Thermal sensors
+genfscon sysfs /devices/virtual/thermal/thermal_zone*/temp u:object_r:sysfs_thermal:s0
+genfscon sysfs /class/thermal/thermal_zone*/temp u:object_r:sysfs_thermal:s0
+
+# Quick Charge
+genfscon sysfs /class/qcom-battery/restricted_charging u:object_r:vendor_sysfs_qcom_battery:s0
+genfscon sysfs /class/power_supply/usb/pd_allowed u:object_r:vendor_sysfs_usbpd_device:s0
