@@ -5,8 +5,3 @@ allow system_server hal_camera:fd *;
 
 allow system_server isolated_compute_app:unix_stream_socket { getopt };
 rw_dir_file(system_server, vndbinder_device)
-
-# Thermal
-allow system_server sysfs_thermal:dir search;
-allow system_server sysfs_thermal:file r_file_perms;
-allow system_server sys_thermal_wifi_limit:file { getattr open read watch watch_reads };
