@@ -112,6 +112,10 @@ PRODUCT_PACKAGES += \
     android.hardware.boot-service.qti \
     android.hardware.boot-service.qti.recovery
 
+# IFAA
+PRODUCT_PACKAGES += \
+    IFAAService
+    
 # Camera
 $(call inherit-product-if-exists, vendor/xiaomi/camera/miuicamera.mk)
 PRODUCT_COPY_FILES += \
