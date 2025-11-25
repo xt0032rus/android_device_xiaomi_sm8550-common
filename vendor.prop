@@ -1,3 +1,13 @@
+# Fast Charge 67W Support
+ro.vendor.charging.enable_fast_charge=1
+ro.vendor.charging.max_current=6700
+ro.vendor.charging.max_voltage=10000
+ro.vendor.charging.fast_charge_type=67W
+persist.vendor.quick.charge=1
+persist.vendor.fast.charge=1
+persist.vendor.charging.enable=1
+persist.vendor.ctm.current.max=6700
+
 # Audio
 vendor.audio_hal.period_size=192
 vendor.audio.ull_record_period_multiplier=2

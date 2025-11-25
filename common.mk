@@ -25,10 +25,6 @@ AB_OTA_POSTINSTALL_CONFIG += \
 PRODUCT_PACKAGES += \
     otapreopt_script \
     checkpoint_gc
-
-# Dolby Audio
-PRODUCT_PACKAGES += \
-    XiaomiDolby
     
 # Audio
 PRODUCT_PACKAGES += \
