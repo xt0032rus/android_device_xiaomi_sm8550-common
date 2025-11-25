@@ -24,6 +24,9 @@
 /dev/goodix_fp u:object_r:vendor_fingerprint_device:s0
 /mnt/vendor/persist/goodix(/.*)? u:object_r:vendor_fingerprint_data_file:s0
 
+# Persist subsystem
+/mnt/vendor/persist/subsys(/.*)?            u:object_r:persist_subsys_file:s0
+
 # GNSS
 /odm/bin/hw/android\.hardware\.gnss-aidl-service-qti u:object_r:vendor_hal_gnss_qti_exec:s0
 
