@@ -10,3 +10,6 @@ rw_dir_file(system_server, vndbinder_device)
 allow system_server sysfs_thermal:dir search;
 allow system_server sysfs_thermal:file r_file_perms;
 allow system_server sys_thermal_wifi_limit:file { getattr open read watch watch_reads };
+
+# Fastcharge
+allow system_server sysfs_fastcharge:file r_file_perms;
