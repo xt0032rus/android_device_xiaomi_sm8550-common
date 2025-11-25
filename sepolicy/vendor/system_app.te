@@ -1,0 +1,18 @@
+# Thermal
+allow system_app sysfs_thermal:file { getattr open read write };
+allow system_app sysfs_thermal:dir search;
+allow system_app thermal_data_file:dir create_dir_perms;
+allow system_app thermal_data_file:file create_file_perms;
+allow system_app sys_thermal_flash_state:file { getattr open read watch watch_reads };
+allow system_app sys_thermal_torch_real_level:file { getattr open read watch watch_reads };
+get_prop(system_app, vendor_thermal_normal_prop)
+r_dir_file(system_app, rootfs)
+
+# Battery
+allow system_app vendor_sysfs_battery_supply:file r_file_perms;
+allow system_app vendor_sysfs_battery_supply:dir r_dir_perms;
+allow system_app vendor_sysfs_qcom_battery:file rw_file_perms;
+allow system_app vendor_sysfs_qcom_battery:dir r_dir_perms;
+allow system_app vendor_sysfs_qcom_battery:dir search;
+allow system_app vendor_sysfs_usb_supply:file r_file_perms;
+allow system_app vendor_sysfs_usb_supply:dir r_dir_perms;
