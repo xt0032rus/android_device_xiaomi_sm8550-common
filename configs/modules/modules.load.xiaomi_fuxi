@@ -1,0 +1,10 @@
+# configs/modules/modules.load.xiaomi_fuxi
+# Специфичные модули для Xiaomi 13
+focaltech_touch.ko
+nt36xxx-i2c.ko
+qcom-spmi-temp-alarm.ko
+qti_qmi_sensor_v2.ko
+bcl_soc.ko
+camera.ko
+msm-vidc.ko
+npu.ko
