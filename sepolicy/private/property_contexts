@@ -1,3 +1,8 @@
+# Audio
+tas.smartpa.debug.                      u:object_r:exported_system_prop:s0
+ro.qc.sdk.audio.ssr                     u:object_r:audio_prop:s0
+ro.qc.sdk.audio.fluencetype             u:object_r:audio_prop:s0
+
 # Fingerprint
 sys.fp.miui.token                       u:object_r:exported_system_prop:s0
 sys.panel.                              u:object_r:vendor_fp_prop:s0
