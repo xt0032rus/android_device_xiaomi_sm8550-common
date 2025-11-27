@@ -221,6 +221,9 @@ vendor.display.enable_early_wakeup=1
 vendor.display.enable_rounded_corner=1
 ro.vendor.displayfeature.dump=true
 
+# Keystore
+ro.hardware.keystore_desede=true
+
 # DPM
 persist.vendor.dpm.vndr.idletimer.mode=default
 persist.vendor.dpm.vndr.halservice.enable=1
