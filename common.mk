@@ -262,6 +262,10 @@ PRODUCT_PACKAGES += \
 PRODUCT_PACKAGES += \
     libpsi
 
+# QTI fwk-detect
+PRODUCT_PACKAGES += \
+    libvndfwk_detect_jni.qti_vendor
+
 # Radio
 PRODUCT_PACKAGES += \
     rfs_msm_mpss_readonly_mbnconfig_symlink
