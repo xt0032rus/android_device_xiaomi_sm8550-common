@@ -52,3 +52,9 @@ ro.security.keystore.enforce_timeout=false
 
 # IPC
 persist.vendor.mink.ipc.keepalive=30000
+
+# Network timeouts to prevent infinite retry loops
+net.tcp.timeout.connect=10000
+net.tcp.timeout.read=30000
+net.tcp.timeout.write=30000
+net.dns.timeout=10000
