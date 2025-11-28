@@ -46,6 +46,9 @@ ro.telephony.default_network=33,33
 ro.gms.ads.disable=true
 persist.gms.ads.dsid.enable=false
 
+# minksocket
+persist.log.tag.minksocket=S
+
 # keystore
 ro.hardware.keystore_disable=true
 ro.security.keystore.enforce_timeout=false
