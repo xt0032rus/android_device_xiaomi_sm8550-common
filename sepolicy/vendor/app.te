@@ -1,0 +1,2 @@
+# For Tinkoff app specifically
+allow untrusted_app cache_file:lnk_file read;
