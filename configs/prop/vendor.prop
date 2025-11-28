@@ -220,6 +220,11 @@ vendor.display.disable_hw_recovery_dump=1
 vendor.display.enable_early_wakeup=1
 vendor.display.enable_rounded_corner=1
 
+# Sensors
+persist.vendor.sensors.debug.hal=0
+persist.vendor.sensors.debug.trace=0
+persist.vendor.sensors.debug.stats=0
+
 # Keystore
 ro.hardware.keystore_desede=true
 
