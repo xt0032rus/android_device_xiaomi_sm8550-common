@@ -374,7 +374,4 @@
     <bool name="config_pocketModeSupported">true</bool>
     <string name="config_pocketJudgeVendorSensorName">xiaomi.sensor.nonui</string>
     <item name="config_pocketJudgeVendorSensorValue" format="float" type="dimen">2.0</item>
-
-    <!-- Shutdown if the battery temperature exceeds (this value * 0.1) Celsius. -->
-    <integer name="config_shutdownBatteryTemperature">580</integer>
 </resources>
