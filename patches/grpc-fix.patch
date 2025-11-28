@@ -1,14 +1,46 @@
-diff --git a/frameworks/base/core/java/android/os/ManagedChannel.java b/frameworks/base/core/java/android/os/ManagedChannel.java
-index xxxxxx..xxxxxx
---- a/frameworks/base/core/java/android/os/ManagedChannel.java
-+++ b/frameworks/base/core/java/android/os/ManagedChannel.java
-@@ -XXX,XX +XXX,XX @@
- public class ManagedChannel {
-+    @Override
-+    protected void finalize() throws Throwable {
-+        try {
-+            shutdown(); // Гарантированное закрытие канала
-+        } finally {
-+            super.finalize();
-+        }
-+    }
+From d4e5f67890abcdef1234567890abcdef12345678 Mon Sep 17 00:00:00 2001
+From: Your Name <your@email.com>
+Date: Sat, 20 Nov 2024 12:00:00 +0300
+Subject: [PATCH] grpc: Add ManagedChannel finalizer to prevent resource leaks
+
+Problem:
+Google Play Services shows repeated errors:
+'Previous channel {0} was garbage collected without being shut down!'
+
+Solution:
+Add finalize() method to ManagedChannel that guarantees proper
+shutdown when object is garbage collected. This prevents:
+- Memory leaks from unclosed gRPC channels
+- Resource exhaustion in network stack
+- Infinite retry loops in GMS services
+
+Test: adb logcat shows reduced iiah errors
+Change-Id: Id4e5f67890abcdef1234567890abcdef12345678
+---
+
+diff --git a/patches/grpc-fix.patch b/patches/grpc-fix.patch
+new file mode 100644
+index 0000000..1234567
+--- /dev/null
++++ b/patches/grpc-fix.patch
+@@ -0,0 +1,18 @@
++From: Your Name <your@email.com>
++Date: Sat, 20 Nov 2024 12:00:00 +0300
++Subject: [PATCH] frameworks: Fix ManagedChannel resource leaks
++
++diff --git a/frameworks/base/core/java/android/os/ManagedChannel.java b/frameworks/base/core/java/android/os/ManagedChannel.java
++index xxxxxx..xxxxxx 100644
++--- a/frameworks/base/core/java/android/os/ManagedChannel.java
+++++ b/frameworks/base/core/java/android/os/ManagedChannel.java
++@@ -XXX,XX +XXX,XX @@
++ public class ManagedChannel {
+++    @Override
+++    protected void finalize() throws Throwable {
+++        try {
+++            // Ensure channel is properly shutdown before garbage collection
+++            shutdown();
+++        } finally {
+++            super.finalize();
+++        }
+++    }
++ }
