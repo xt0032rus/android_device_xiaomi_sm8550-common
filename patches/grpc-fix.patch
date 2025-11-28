@@ -1,0 +1,14 @@
+diff --git a/frameworks/base/core/java/android/os/ManagedChannel.java b/frameworks/base/core/java/android/os/ManagedChannel.java
+index xxxxxx..xxxxxx
+--- a/frameworks/base/core/java/android/os/ManagedChannel.java
++++ b/frameworks/base/core/java/android/os/ManagedChannel.java
+@@ -XXX,XX +XXX,XX @@
+ public class ManagedChannel {
++    @Override
++    protected void finalize() throws Throwable {
++        try {
++            shutdown(); // Гарантированное закрытие канала
++        } finally {
++            super.finalize();
++        }
++    }
