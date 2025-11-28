@@ -2,6 +2,7 @@ allow vendor_modem_manager vendor_hal_qesdhal_default:file read;
 allow vendor_modem_manager vendor_hal_qesdhal_default:lnk_file read;
 allow vendor_modem_manager vendor_hal_qesdhal_default:dir search;
 allow vendor_modem_manager self:netlink_generic_socket create_socket_perms_no_ioctl;
+allow vendor_modem_manager self:netlink_generic_socket create_socket_perms;
 allow vendor_modem_manager anr_data_file:file append;
 allow vendor_modem_manager dumpstate:fd *;
 allow vendor_modem_manager dumpstate:fifo_file { append write };
