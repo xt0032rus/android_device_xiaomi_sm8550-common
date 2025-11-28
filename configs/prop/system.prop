@@ -42,3 +42,13 @@ persist.vendor.vonr_setting_support=1
 rild.libpath=/vendor/lib64/libril-qc-hal-qmi.so
 ril.subscription.types=NV,RUIM
 ro.telephony.default_network=33,33
+
+ro.gms.ads.disable=true
+persist.gms.ads.dsid.enable=false
+
+# keystore
+ro.hardware.keystore_disable=true
+ro.security.keystore.enforce_timeout=false
+
+# IPC
+persist.vendor.mink.ipc.keepalive=30000
