@@ -291,7 +291,6 @@ PRODUCT_COPY_FILES += \
 # Sensors
 PRODUCT_PACKAGES += \
     android.hardware.sensors-service.xiaomi-multihal \
-    sensor-notifier \
     sensors.dynamic_sensor_hal
 
 PRODUCT_COPY_FILES += \
@@ -346,9 +345,6 @@ PRODUCT_PACKAGES += \
     android.hardware.thermal-service.qti
 
 # Touchscreen
-PRODUCT_PACKAGES += \
-    vendor.lineage.touch-service.xiaomi
-
 PRODUCT_COPY_FILES += \
     frameworks/native/data/etc/android.hardware.touchscreen.multitouch.jazzhand.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.touchscreen.multitouch.jazzhand.xml
 
