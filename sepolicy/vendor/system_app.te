@@ -1,6 +1,14 @@
 # Thermal
 allow system_app sysfs_thermal:file { getattr open read write };
 allow system_app sysfs_thermal:dir search;
+allow system_app hal_fingerprint_default:binder call;
+allow system_app hal_audio_default:binder call;
+allow system_app hal_bootctl_default:binder call;
+allow system_app vendor_hal_gnss_qti:binder call;
+allow system_app hal_health_default:binder call;
+allow system_app hal_nfc_default:binder call;
+allow system_app hal_power_default:binder call;
+allow system_app vendor_hal_keymint_qti:binder call;
 allow system_app thermal_data_file:dir create_dir_perms;
 allow system_app thermal_data_file:file create_file_perms;
 allow system_app sys_thermal_flash_state:file { getattr open read watch watch_reads };
