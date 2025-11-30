@@ -43,8 +43,14 @@ ro.telephony.default_network=33,33
 ro.gms.ads.disable=true
 persist.gms.ads.dsid.enable=false
 
-# minksocket
+# Debug (silence some logspam)
+persist.log.tag.EmojiCompatManager=S
+persist.log.tag.HWUI=S
+persist.log.tag.imsd=S
 persist.log.tag.minksocket=S
+persist.log.tag.ResourcesCompat=E
+persist.log.tag.android.vending=E
+persist.log.tag.android.hardware.power-service-qti=E
 
 # keystore
 ro.hardware.keystore_disable=true
