@@ -255,6 +255,9 @@ PRODUCT_PACKAGES += \
     vendor_dsp_mountpoint \
     vendor_firmware_mnt_mountpoint
 
+# EPPE
+TARGET_DISABLE_EPPE := true
+
 # Power
 PRODUCT_PACKAGES += \
     android.hardware.power-service-qti
