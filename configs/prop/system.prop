@@ -65,3 +65,7 @@ net.tcp.timeout.connect=10000
 net.tcp.timeout.read=30000
 net.tcp.timeout.write=30000
 net.dns.timeout=10000
+
+# RKPD
+remote_provisioning.enable_rkpd=true
+remote_provisioning.hostname=remoteprovisioning.googleapis.com
