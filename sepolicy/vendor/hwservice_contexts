@@ -11,3 +11,6 @@ vendor.xiaomi.sensor.communicate::ISensorCommunicate  u:object_r:vendor_hal_sens
 
 # Dolby
 vendor.dolby.hardware.dms::IDms                          u:object_r:hal_dms_hwservice:s0
+
+# Mlipay
+vendor.xiaomi.hardware.mlipay::IMlipayService u:object_r:hal_mlipay_hwservice:s0
