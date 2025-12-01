@@ -78,15 +78,6 @@ public class BootCompletedReceiver extends BroadcastReceiver {
         }
 
         try {
-            new Handler(Looper.getMainLooper()).postDelayed(() -> {
-                if (DEBUG) Log.d(TAG, "Initializing GestureUtils after delay");
-                com.xiaomi.settings.utils.GestureUtils.init(context);
-            }, GESTURE_INIT_DELAY_MS);
-        } catch (Exception e) {
-            Log.e(TAG, "Failed to initialize GestureUtils", e);
-        }
-
-        try {
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
             boolean isEdgeRejectionEnabled = prefs.getBoolean(Constants.KEY_EDGE_REJECTION, true);
             if (DEBUG) Log.d(TAG, "Setting initial edge rejection state to: " + isEdgeRejectionEnabled);
