@@ -368,6 +368,11 @@ ro.hardware.wlan.chip=kiwi_v2
 ro.hardware.wlan.mimo=1
 ro.hardware.wlan.dbs=2
 ro.vendor.net.enable_passpoint_r1=1
+ro.vendor.wifi.scan.optimization.disable=1
+persist.vendor.wifi.scan.optimization.disable=1
+config.wifi_supplicant_scan_interval=15000
+wifi.direct.interface=p2p0
+wifi.interface=wlan0
 
 # LMK
 ro.config.low_ram=false

@@ -1,1 +1,1 @@
-allow mediaprovider_app radio_service:service_manager { find } ;
+allow { mediaprovider mediadrmserver mediaextractor } radio_service:service_manager { find };
