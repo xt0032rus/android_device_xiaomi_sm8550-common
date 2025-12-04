@@ -25,7 +25,11 @@ AB_OTA_POSTINSTALL_CONFIG += \
 PRODUCT_PACKAGES += \
     otapreopt_script \
     checkpoint_gc
-    
+
+# XiaomiParts
+PRODUCT_PACKAGES += \
+    XiaomiParts
+
 # Audio
 PRODUCT_PACKAGES += \
     android.hardware.audio@7.1-impl \
