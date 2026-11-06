@@ -1,0 +1,6 @@
+
+# Vendor daemons probe system props that carry no vendor label; harmless
+dontaudit hal_sensors_default default_prop:file r_file_perms;
+dontaudit hal_nfc_default default_prop:file r_file_perms;
+dontaudit rild default_prop:file r_file_perms;
+dontaudit hal_secure_element_default init_service_status_private_prop:file r_file_perms;

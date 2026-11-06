@@ -4,3 +4,9 @@ media.stagefright.audio.deep=true
 
 # Bluetooth
 bluetooth.device_id.vendor_id=0x001D
+audio.sys.noisy.broadcast.delay=600
+audio.sys.offload.pstimeout.secs=3
+bluetooth.auto_connect_profiles.enabled=true
+bluetooth.profile.bap.unicast.server.enabled=true
+bluetooth.profile.tbs.server.enabled=true
+bluetooth.profile.vc.server.enabled=true
