@@ -22,3 +22,5 @@ ro.vendor.se. u:object_r:vendor_nfc_mi_prop:s0
 
 ro.vendor.oem.                        u:object_r:vendor_oem_prop:s0
 vendor.sys.thermal.bcl.               u:object_r:vendor_thermal_bcl_prop:s0
+
+persist.vendor.bt.a2dp_offload_cap u:object_r:vendor_bt_a2dp_offload_prop:s0
