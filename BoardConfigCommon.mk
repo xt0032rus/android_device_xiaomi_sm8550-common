@@ -189,6 +189,12 @@ DEVICE_MANIFEST_FILE := \
     $(COMMON_PATH)/configs/vintf/manifest_kalama.xml \
     $(COMMON_PATH)/configs/vintf/manifest_xiaomi.xml
 
+DEVICE_FRAMEWORK_COMPATIBILITY_MATRIX_FILE += \
+    vendor/lunaris/dolby/vintf/dolby_framework_compatibility_matrix.xml
+
+DEVICE_MANIFEST_FILE += \
+    vendor/lunaris/dolby/vintf/dolby_manifest.xml
+
 # Vendor security patch
 VENDOR_SECURITY_PATCH := 2026-08-01
 

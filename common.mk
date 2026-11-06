@@ -13,11 +13,12 @@ $(call inherit-product, frameworks/native/build/phone-xhdpi-6144-dalvik-heap.mk)
 # Enable project quotas and casefolding for emulated storage without sdcardfs
 $(call inherit-product, $(SRC_TARGET_DIR)/product/emulated_storage.mk)
 
+# Dolby audio stack (DAP / DMS / Dolby audio decoders).
+# The Dolby Vision video components live in device/xiaomi/fuxi-miuicamera.
+$(call inherit-product-if-exists, device/xiaomi/sm8550-common-dolby/dolby.mk)
+
 # A/B
 $(call inherit-product, $(SRC_TARGET_DIR)/product/virtual_ab_ota/launch_with_vendor_ramdisk.mk)
-
-# Inherit DolbyAtmos
-$(call inherit-product, device/xiaomi/sm8550-common-dolby/dolby.mk)
 
 AB_OTA_POSTINSTALL_CONFIG += \
     RUN_POSTINSTALL_system=true \
@@ -290,6 +291,11 @@ PRODUCT_PACKAGES += \
 PRODUCT_PACKAGES += \
     LineageResXiaomi
 
+# LunarisDolby app
+PRODUCT_PACKAGES += \
+    LunarisDolby \
+    XiaomiDolbyResCommon
+    
 # Partitions
 PRODUCT_PACKAGES += \
     vendor_bt_firmware_mountpoint \
@@ -434,9 +440,6 @@ PRODUCT_COPY_FILES += \
     frameworks/native/data/etc/android.hardware.usb.accessory.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.usb.accessory.xml \
     frameworks/native/data/etc/android.hardware.usb.host.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.usb.host.xml
 
-# Vendor configurations
-$(call inherit-product, vendor/xiaomi/sm8550-common/sm8550-common-vendor.mk)
-
 # Vendor service manager
 PRODUCT_PACKAGES += \
     vndservicemanager
@@ -477,3 +480,6 @@ PRODUCT_PACKAGES += \
     firmware_wlanmdsp.otaupdate_symlink \
     firmware_wlan_mac.bin_symlink \
     firmware_WCNSS_qcom_cfg.ini_symlink
+
+# Vendor configurations
+$(call inherit-product, vendor/xiaomi/sm8550-common/sm8550-common-vendor.mk)
