@@ -1,0 +1,2 @@
+# SystemUI reads ro.usb.uvc.enabled
+get_prop(platform_app, usb_uvc_enabled_prop)

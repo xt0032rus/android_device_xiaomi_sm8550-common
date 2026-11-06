@@ -1,0 +1,3 @@
+
+set_prop(rild, vendor_oem_prop)
+get_prop(rild, vendor_oem_prop)

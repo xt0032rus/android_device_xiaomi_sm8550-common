@@ -1,0 +1,2 @@
+# GPU work bpf map is labelled fs_bpf in this build
+allow gpuservice fs_bpf:file getattr;
