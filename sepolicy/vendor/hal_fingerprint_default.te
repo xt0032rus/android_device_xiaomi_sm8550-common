@@ -25,3 +25,5 @@ r_dir_file(hal_fingerprint_default, vendor_persist_qti_fp_file)
 set_prop(hal_fingerprint_default, vendor_fp_prop)
 allow hal_fingerprint_default self:netlink_socket create_socket_perms_no_ioctl;
 get_prop(hal_fingerprint_default, vendor_camera_prop)
+allow hal_fingerprint_default self:netlink_socket create_socket_perms_no_ioctl;
+get_prop(hal_fingerprint_default, vendor_camera_prop)
