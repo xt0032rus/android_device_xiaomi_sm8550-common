@@ -1,1 +1,0 @@
-dontaudit vendor_diag-router vendor_data_file:dir write;

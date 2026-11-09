@@ -111,6 +111,9 @@ blob_fixups: blob_fixups_user_type = {
         .replace_needed('libtinyxml2.so', 'libtinyxml2-v34.so'),
     'vendor/etc/init/hw/init.batterysecret.rc': blob_fixup()
         .regex_replace('group system system wakelock', 'group system system usb wakelock'),
+    # kalama has no SLPI (sensors run on the ADSP); the write waits 60s and fails
+    'vendor/etc/init/init.vendor.sensors.rc': blob_fixup()
+        .regex_replace('.*boot_slpi.*\n', ''),
 }  # fmt: skip
 
 module = ExtractUtilsModule(
