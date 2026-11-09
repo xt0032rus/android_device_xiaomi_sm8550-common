@@ -25,5 +25,5 @@ r_dir_file(mi_thermald, sysfs_leds)
 r_dir_file(mi_thermald, sysfs_thermal)
 set_prop(mi_thermald, vendor_thermal_normal_prop)
 
-allow mi_thermald self:capability chown;
+allow mi_thermald self:capability { chown fowner };
 set_prop(mi_thermald, vendor_thermal_bcl_prop)
