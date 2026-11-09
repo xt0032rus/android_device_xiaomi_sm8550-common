@@ -1,3 +1,4 @@
 
 set_prop(rild, vendor_oem_prop)
 get_prop(rild, vendor_oem_prop)
+dontaudit rild vendor_data_file:dir write;
