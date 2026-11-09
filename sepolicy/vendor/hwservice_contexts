@@ -1,8 +1,7 @@
-# The hwservice contexts for the camera, fingerprint and Mlipay HALs are
-# declared in device/xiaomi/fuxi-miuicamera/sepolicy/vendor/hwservice_contexts.
-# This file used to repeat them verbatim, which made the merged contexts
-# test report:
-#   Multiple same specifications for vendor.xiaomi.hardware.bgservice::IBGService
-#   Multiple same specifications for vendor.xiaomi.hardware.quickcamera::IQuickCameraService
-#   Multiple same specifications for vendor.xiaomi.hardware.fx.tunnel::IMiFxTunnel
-#   Multiple same specifications for vendor.xiaomi.hardware.mlipay::IMlipayService
+# Camera hwservice contexts live in device/xiaomi/fuxi-miuicamera.
+
+# Fingerprint
+vendor.xiaomi.hardware.fx.tunnel::IMiFxTunnel u:object_r:vendor_hal_fingerprint_hwservice_xiaomi:s0
+
+# Mlipay
+vendor.xiaomi.hardware.mlipay::IMlipayService u:object_r:hal_mlipay_hwservice:s0
